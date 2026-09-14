@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مسارات النمو | Four Paths</title>
+<meta name="description" content="تطبيق لتطوير الذات عبر أربعة مسارات: الجسد، الروح، العقل، والعالم الخارجي.">
+<meta name="theme-color" content="#E9ECF2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400..700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
+<style>
+/* ===========================================================
+   1) المتغيرات والثيمات
+   =========================================================== */
+:root{
+  --bg:#E9ECF2; --surface:#FFFFFF; --surface-2:#F4F6FA;
+  --ink:#151A26; --ink-2:#5C6580; --ink-3:#8B94AC;
+  --line:#DCE1EB; --line-strong:#C6CDDC;
+  --gold:#A8801F;
+  --body:#BE3A56; --soul:#0E8C7D; --mind:#B97F12; --out:#3A57BE;
+  --shadow:0 1px 2px rgba(20,26,44,.06), 0 8px 24px -14px rgba(20,26,44,.25);
+  --shadow-lift:0 2px 6px rgba(20,26,44,.08), 0 22px 40px -18px rgba(20,26,44,.34);
+  --r-lg:20px; --r-md:14px; --r-sm:10px;
+}
+[data-theme="dark"]{
+  --bg:#0C101A; --surface:#151B29; --surface-2:#1B2334;
+  --ink:#EDF1F9; --ink-2:#9BA5BE; --ink-3:#727C96;
+  --line:#263044; --line-strong:#36415A;
+  --gold:#D9B45C;
+  --body:#E3687F; --soul:#2FC0AE; --mind:#EFBB4E; --out:#7E96F7;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
+  --shadow-lift:0 2px 8px rgba(0,0,0,.45), 0 24px 46px -20px rgba(0,0,0,.9);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans Arabic",system-ui,"Segoe UI",sans-serif;
+  font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased;
+  transition:background .35s ease,color .35s ease;
+}
+h1,h2,h3,h4{font-family:"Reem Kufi",serif;font-weight:600;line-height:1.35;margin:0}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:2.5px solid var(--gold);outline-offset:3px;border-radius:5px}
+::selection{background:var(--gold);color:#fff}
+.wrap{width:min(1160px,100% - 2.2rem);margin-inline:auto}
+
+/* ===========================================================
+   2) الهيدر والتنقل بين الصفحات
+   =========================================================== */
+header.top{
+  position:sticky;top:0;z-index:60;
+  background:color-mix(in srgb,var(--bg) 90%,transparent);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.top-in{display:flex;align-items:center;gap:.8rem;padding:.6rem 0}
+.brand{display:flex;align-items:center;gap:.65rem;margin-inline-end:auto}
+.mark{width:38px;height:38px;flex:none}
+.brand-txt strong{display:block;font-family:"Reem Kufi",serif;font-size:1.1rem;font-weight:700;line-height:1.2}
+.brand-txt span{display:block;font-size:.63rem;letter-spacing:.2em;color:var(--ink-3);font-weight:500}
+.tabs{display:flex;gap:.2rem;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:.25rem;box-shadow:var(--shadow)}
+.tab{
+  display:flex;align-items:center;gap:.4rem;padding:.5rem .95rem;border-radius:999px;
+  font-size:.87rem;font-weight:600;color:var(--ink-2);white-space:nowrap;transition:.18s;
+}
+.tab svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tab:hover{color:var(--ink);background:var(--surface-2)}
+.tab[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.tab .badge{background:var(--gold);color:#fff;font-size:.68rem;border-radius:99px;padding:0 .4em;min-width:1.3em;text-align:center}
+.icon-btn{
+  width:44px;height:44px;flex:none;border-radius:13px;display:grid;place-items:center;
+  background:var(--surface);border:1px solid var(--line);color:var(--ink-2);box-shadow:var(--shadow);transition:.18s;
+}
+.icon-btn:hover{color:var(--ink);border-color:var(--line-strong)}
+.icon-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+[data-theme="dark"] .sun{display:none}
+[data-theme="light"] .moon{display:none}
+
+/* شريط التنقل السفلي للهاتف */
+nav.bottom{
+  position:fixed;inset-inline:0;bottom:0;z-index:70;display:none;
+  background:color-mix(in srgb,var(--surface) 94%,transparent);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+  padding:.35rem .3rem calc(.35rem + env(safe-area-inset-bottom));
+}
+nav.bottom ul{display:flex;margin:0;padding:0;list-style:none}
+nav.bottom li{flex:1}
+nav.bottom button{
+  width:100%;display:flex;flex-direction:column;align-items:center;gap:.15rem;
+  padding:.45rem .1rem;border-radius:12px;color:var(--ink-3);font-size:.66rem;font-weight:600;position:relative;
+}
+nav.bottom svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav.bottom button[aria-current="page"]{color:var(--gold)}
+nav.bottom .dot{position:absolute;top:.3rem;inset-inline-end:22%;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+
+/* ===========================================================
+   3) الصفحات
+   =========================================================== */
+main{padding-bottom:4rem}
+.page[hidden]{display:none}
+.page{animation:pageIn .34s ease both}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}}
+.page-head{padding:1.9rem 0 1.2rem;display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap}
+.page-head h1{font-size:clamp(1.5rem,3.4vw,2rem)}
+.page-head p{margin:.2rem 0 0;color:var(--ink-2);font-size:.9rem;max-width:56ch}
+.page-head .spacer{flex:1}
+.stack{display:flex;flex-direction:column;gap:1.1rem}
+
+/* ===========================================================
+   4) مكوّنات عامة
+   =========================================================== */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--shadow)}
+.panel-h{display:flex;align-items:center;gap:.6rem;padding:.85rem 1.1rem;border-bottom:1px solid var(--line)}
+.panel-h h3{font-size:1rem;flex:1}
+.panel-h .count{color:var(--ink-3);font-size:.8rem}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.45rem;padding:.65rem 1.2rem;border-radius:999px;
+  font-weight:600;font-size:.9rem;border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);transition:.18s;
+}
+.btn:hover{border-color:var(--gold)}
+.btn-solid{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn-solid:hover{background:var(--gold);border-color:var(--gold);color:#fff}
+.btn-ghost{background:transparent}
+.btn-sm{padding:.42rem .9rem;font-size:.82rem}
+.chip{padding:.4rem .85rem;border-radius:999px;font-size:.82rem;font-weight:500;border:1px solid var(--line);color:var(--ink-2);transition:.18s}
+.chip:hover{border-color:var(--line-strong);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.empty{text-align:center;color:var(--ink-3);padding:2.4rem 1.2rem;font-size:.9rem}
+.empty b{display:block;color:var(--ink-2);font-family:"Reem Kufi",serif;font-size:1.05rem;margin-bottom:.3rem}
+
+/* ===========================================================
+   5) صفحة اليوم: الاقتباس والحلقة
+   =========================================================== */
+.hero{display:grid;grid-template-columns:1.4fr .9fr;gap:1.1rem}
+.quote-card{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:1.9rem 2rem 1.5rem;box-shadow:var(--shadow)}
+.quote-card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.13;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23808080' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3Cpath d='M12 12 H52 V52 H12 Z'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-image:linear-gradient(to left,#000,transparent 62%);mask-image:linear-gradient(to left,#000,transparent 62%);
+}
+[data-theme="dark"] .quote-card::after{opacity:.2}
+.quote-card>*{position:relative;z-index:1}
+.eyebrow{display:flex;align-items:center;gap:.55rem;color:var(--gold);font-size:.78rem;font-weight:600;margin:0 0 .8rem}
+.eyebrow i{width:22px;height:1px;background:var(--gold);display:block}
+blockquote{margin:0;font-family:"Amiri",serif;font-size:clamp(1.25rem,2.5vw,1.8rem);line-height:1.85;max-width:34ch}
+.q-src{margin:.8rem 0 0;color:var(--ink-2);font-size:.85rem}
+.q-actions{display:flex;gap:.6rem;margin-top:1.3rem;flex-wrap:wrap}
+.ring-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:1.4rem;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;text-align:center}
+.ring{--p:0;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;position:relative;
+  background:conic-gradient(var(--gold) calc(var(--p)*1%),var(--line) 0);transition:background .7s cubic-bezier(.4,0,.2,1)}
+.ring::before{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--surface)}
+.ring b{position:relative;font-family:"Reem Kufi",serif;font-size:2rem;font-weight:700;line-height:1}
+.ring b small{font-size:.9rem;font-weight:500;color:var(--ink-2)}
+.ring-card h3{font-size:1rem;margin-top:.6rem}
+.ring-card p{margin:0;color:var(--ink-2);font-size:.83rem}
+
+/* ===========================================================
+   6) شريط الصوت
+   =========================================================== */
+.voice-bar{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:1rem 1.1rem;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+.voice-bar.live{border-color:var(--body)}
+.mic{width:62px;height:62px;flex:none;border-radius:50%;display:grid;place-items:center;position:relative;background:var(--ink);color:var(--bg);transition:background .25s,transform .2s}
+.mic:hover{transform:scale(1.04)}
+.mic svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mic.rec{background:var(--body);color:#fff}
+.mic.rec::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--body);animation:pulse 1.35s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.9);opacity:.85}100%{transform:scale(1.35);opacity:0}}
+.voice-field{flex:1;min-width:230px}
+.voice-field label{display:block;font-size:.78rem;color:var(--ink-3);margin-bottom:.1rem}
+.voice-field input{width:100%;border:0;border-bottom:1px dashed var(--line-strong);background:transparent;padding:.4rem 0;font-size:1.02rem;font-weight:500}
+.voice-field input:focus{outline:none;border-bottom-color:var(--gold);border-bottom-style:solid}
+.voice-hint{font-size:.78rem;color:var(--ink-3);margin:.3rem 0 0;display:flex;align-items:center;gap:.4rem}
+.voice-hint .live-dot{width:8px;height:8px;border-radius:50%;background:var(--body);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+.voice-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+
+/* ===========================================================
+   7) بطاقات المسارات
+   =========================================================== */
+.paths{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem}
+.path-card{--c:var(--out);position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:1.1rem 1.1rem 1rem;box-shadow:var(--shadow);overflow:hidden;text-align:start;width:100%;transition:transform .2s,box-shadow .25s,border-color .25s}
+.path-card::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:4px;background:var(--c)}
+.path-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift)}
+.path-card[aria-pressed="true"]{border-color:var(--c);box-shadow:var(--shadow-lift)}
+.pc-top{display:flex;align-items:center;gap:.55rem}
+.pc-emoji{font-size:1.4rem;line-height:1}
+.path-card h3{font-size:1.05rem;color:var(--c)}
+.pc-sub{margin:.15rem 0 .9rem;font-size:.77rem;color:var(--ink-3);min-height:2.3em}
+.pc-num{font-family:"Reem Kufi",serif;font-size:1.7rem;font-weight:700;line-height:1}
+.pc-num span{font-size:.82rem;color:var(--ink-2);font-weight:400;font-family:"IBM Plex Sans Arabic",sans-serif}
+.bar{height:6px;border-radius:99px;background:var(--line);margin-top:.7rem;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--c);border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.pc-open{display:block;margin-top:.5rem;font-size:.74rem;color:var(--ink-3)}
+
+/* ===========================================================
+   8) قوائم المهام
+   =========================================================== */
+.task-list{padding:.5rem .6rem .9rem;display:flex;flex-direction:column;gap:.3rem}
+.task{--c:var(--out);display:flex;gap:.75rem;align-items:flex-start;padding:.8rem .75rem;border-radius:var(--r-sm);border:1px solid transparent;transition:background .18s,border-color .18s}
+.task:hover{background:var(--surface-2);border-color:var(--line)}
+.task.done{opacity:.5}
+.task.done .t-title{text-decoration:line-through}
+.check{width:26px;height:26px;flex:none;margin-top:2px;border-radius:8px;border:1.8px solid var(--c);display:grid;place-items:center;color:transparent;transition:.18s}
+.check:hover{background:color-mix(in srgb,var(--c) 14%,transparent)}
+.task.done .check{background:var(--c);color:#fff}
+.check svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.t-body{flex:1;min-width:0}
+.t-title{font-weight:600;line-height:1.55;display:block;word-break:break-word}
+.t-desc{font-size:.83rem;color:var(--ink-2);margin:.1rem 0 0}
+.t-meta{display:flex;flex-wrap:wrap;gap:.25rem .5rem;margin-top:.35rem;font-size:.75rem;color:var(--ink-3)}
+.t-meta b{color:var(--c);font-weight:600}
+.t-meta .sep{opacity:.4}
+.t-thumb{width:48px;height:48px;border-radius:9px;object-fit:cover;border:1px solid var(--line);cursor:zoom-in;flex:none}
+.t-act{display:flex;flex-direction:column;gap:.15rem}
+.t-act button{color:var(--ink-3);padding:.3rem;border-radius:7px}
+.t-act button:hover{color:var(--ink);background:var(--surface-2)}
+.t-act svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.group-h{display:flex;align-items:center;gap:.5rem;padding:.9rem .8rem .25rem;font-size:.82rem;font-weight:600;color:var(--ink-2)}
+.group-h i{width:9px;height:9px;border-radius:50%;flex:none}
+.group-h span{color:var(--ink-3);font-weight:400;font-size:.78rem}
+
+/* الإضافة السريعة للمهام المفتوحة */
+.quick{display:flex;gap:.5rem;padding:.9rem 1.1rem;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.quick input{flex:1;min-width:180px;padding:.65rem .8rem;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface-2)}
+.quick input:focus{outline:none;border-color:var(--gold)}
+.filter-row{display:flex;gap:.4rem;flex-wrap:wrap;padding:.75rem 1.1rem;border-bottom:1px solid var(--line);align-items:center}
+
+/* ===========================================================
+   9) التقويم
+   =========================================================== */
+.cal-wrap{display:grid;grid-template-columns:340px 1fr;gap:1.1rem;align-items:start}
+.cal{padding:.9rem 1rem 1.1rem}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-grid .dow{text-align:center;font-size:.68rem;color:var(--ink-3);padding-bottom:.3rem;font-weight:600}
+.day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.85rem;border:1px solid transparent;transition:background .18s}
+.day:hover{background:var(--surface-2)}
+.day.pad{color:var(--ink-3);opacity:.3;pointer-events:none}
+.day.today{border-color:var(--gold);font-weight:700}
+.day.sel{background:var(--ink);color:var(--bg);font-weight:700}
+.dots{display:flex;gap:2px;height:5px}
+.dots i{width:5px;height:5px;border-radius:50%;display:block}
+.cal-nav{display:flex;gap:.25rem}
+.cal-nav button{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--ink-2);border:1px solid transparent}
+.cal-nav button:hover{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+.cal-legend{display:flex;flex-wrap:wrap;gap:.45rem .85rem;margin-top:.85rem;font-size:.73rem;color:var(--ink-2)}
+.cal-legend span{display:flex;align-items:center;gap:.3rem}
+.cal-legend i{width:7px;height:7px;border-radius:50%}
+
+/* ===========================================================
+   10) الإحصائيات والتأمل
+   =========================================================== */
+.stats{display:grid;grid-template-columns:1.2fr 1fr;gap:1.1rem}
+.chart-box{padding:1.2rem 1.3rem 1.4rem}
+.chart-box h3{font-size:1rem}
+.chart-box p{margin:.15rem 0 1rem;font-size:.82rem;color:var(--ink-2)}
+.chart-holder{position:relative;height:300px}
+.journal{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.form-pad{padding:1.2rem 1.3rem 1.3rem}
+.field{margin-bottom:.85rem}
+.field label{display:block;font-size:.79rem;color:var(--ink-2);margin-bottom:.3rem;font-weight:500}
+.field input,.field select,.field textarea{width:100%;padding:.65rem .8rem;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface-2);transition:border-color .18s}
+.field textarea{resize:vertical;min-height:120px;line-height:1.8}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold)}
+.field.off{opacity:.45;pointer-events:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.entries{padding:.6rem .8rem 1rem;display:flex;flex-direction:column;gap:.5rem;max-height:460px;overflow:auto}
+.entry{--c:var(--out);padding:.8rem .9rem;border-radius:var(--r-sm);background:var(--surface-2);border-inline-start:3px solid var(--c)}
+.entry-h{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--ink-3);margin-bottom:.25rem}
+.entry-h b{color:var(--c);font-weight:600}
+.entry p{margin:0;font-size:.9rem;white-space:pre-wrap}
+
+/* ===========================================================
+   11) النافذة والتنبيهات
+   =========================================================== */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(9,12,20,.55);backdrop-filter:blur(4px);display:grid;place-items:center;padding:1rem;opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s}
+.overlay.open{opacity:1;visibility:visible}
+.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:var(--shadow-lift);transform:translateY(14px) scale(.98);transition:transform .24s cubic-bezier(.2,.9,.3,1.2)}
+.overlay.open .modal{transform:none}
+.modal-h{display:flex;align-items:center;gap:.7rem;padding:1rem 1.2rem;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:2}
+.modal-h h3{flex:1;font-size:1.1rem}
+.modal-b{padding:1.1rem 1.2rem}
+.modal-f{display:flex;gap:.6rem;padding:1rem 1.2rem;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--surface)}
+.path-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem}
+.path-pick button{--c:var(--out);padding:.6rem .3rem;border-radius:var(--r-sm);border:1.5px solid var(--line);background:var(--surface-2);font-size:.78rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:.2rem}
+.path-pick button[aria-pressed="true"]{border-color:var(--c);color:var(--c);background:color-mix(in srgb,var(--c) 10%,transparent)}
+.img-drop{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.img-drop img{width:64px;height:64px;border-radius:var(--r-sm);object-fit:cover;border:1px solid var(--line)}
+.parsed-note{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem;padding:.7rem .8rem;border-radius:var(--r-sm);background:color-mix(in srgb,var(--gold) 12%,transparent);border:1px dashed var(--gold);font-size:.76rem}
+#toast{position:fixed;bottom:1.2rem;inset-inline-start:1.2rem;z-index:200;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
+.toast{background:var(--ink);color:var(--bg);padding:.7rem 1.1rem;border-radius:999px;font-size:.86rem;box-shadow:var(--shadow-lift);animation:up .3s ease both;max-width:min(90vw,380px)}
+@keyframes up{from{transform:translateY(14px);opacity:0}}
+#lightbox{position:fixed;inset:0;z-index:150;background:rgba(9,12,20,.85);display:none;place-items:center;padding:2rem;cursor:zoom-out}
+#lightbox.open{display:grid}
+#lightbox img{max-width:100%;max-height:90vh;border-radius:var(--r-md)}
+footer{border-top:1px solid var(--line);padding:1.6rem 0;color:var(--ink-3);font-size:.78rem;text-align:center}
+
+/* ===========================================================
+   12) الاستجابة للأجهزة
+   =========================================================== */
+@media (max-width:1040px){
+  .hero,.stats,.journal,.cal-wrap{grid-template-columns:1fr}
+  .paths{grid-template-columns:repeat(2,1fr)}
+  .ring-card{flex-direction:row;justify-content:flex-start;text-align:start;gap:1.2rem}
+  .ring{width:108px;height:108px}
+  .ring b{font-size:1.5rem}
+  .chart-holder{height:270px}
+}
+@media (max-width:880px){
+  .tabs{display:none}
+  nav.bottom{display:block}
+  main{padding-bottom:5.5rem}
+  #toast{bottom:5.2rem}
+  .page-head{padding:1.4rem 0 1rem}
+}
+@media (max-width:560px){
+  body{font-size:15.5px}
+  .wrap{width:calc(100% - 1.5rem)}
+  .paths{grid-template-columns:1fr}
+  .quote-card{padding:1.3rem}
+  blockquote{font-size:1.18rem;max-width:none}
+  .row2,.path-pick{grid-template-columns:1fr 1fr}
+  .brand-txt span{display:none}
+  .voice-bar{padding:.9rem}
+  .voice-actions{width:100%}
+  .voice-actions .btn{flex:1}
+  .chart-holder{height:250px}
+  .modal-f .btn{flex:1}
+  .day{font-size:.8rem;border-radius:8px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="38" height="38">
+          <path d="M20 3 L37 20 L20 37 L3 20 Z" fill="none" stroke="var(--gold)" stroke-width="1.6"/>
+          <path d="M8 8 H32 V32 H8 Z" fill="none" stroke="var(--gold)" stroke-width="1.1" opacity=".65"/>
+          <circle cx="20" cy="20" r="3.4" fill="var(--gold)"/>
+        </svg>
+      </span>
+      <span class="brand-txt"><strong>مسارات النمو</strong><span>FOUR PATHS</span></span>
+    </div>
+
+    <nav class="tabs" id="tabs" aria-label="أقسام التطبيق">
+      <button class="tab" data-go="today"><svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/><circle cx="12" cy="12" r="4.5"/></svg>اليوم</button>
+      <button class="tab" data-go="open"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>مهام مفتوحة<span class="badge" id="tabBadge" hidden>0</span></button>
+      <button class="tab" data-go="cal"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>التقويم</button>
+      <button class="tab" data-go="stats"><svg viewBox="0 0 24 24"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>الإحصائيات</button>
+      <button class="tab" data-go="journal"><svg viewBox="0 0 24 24"><path d="M6 4h11a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2z"/><path d="M6 16h13"/></svg>التأمل</button>
+    </nav>
+
+    <button class="icon-btn" id="btnAdd" title="مهمة جديدة" aria-label="إضافة مهمة جديدة">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+    <button class="icon-btn" id="btnTheme" title="تبديل المظهر" aria-label="تبديل المظهر">
+      <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2 12h2M20 12h2M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"/></svg>
+      <svg class="moon" viewBox="0 0 24 24"><path d="M20 14.5A8.2 8.2 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ صفحة: اليوم ============ -->
+  <section class="page" id="p-today">
+    <div class="page-head">
+      <div>
+        <h1>يومك</h1>
+        <p id="todayDate">—</p>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="hero">
+        <article class="quote-card">
+          <p class="eyebrow"><i></i> إلهام اليوم</p>
+          <blockquote id="quoteText">…</blockquote>
+          <p class="q-src" id="quoteSrc"></p>
+          <div class="q-actions">
+            <button class="btn" id="btnQuote">✨ اقتباس جديد</button>
+            <button class="btn btn-solid" id="btnAdd2">أضف مهمة</button>
+          </div>
+        </article>
+        <aside class="ring-card">
+          <div class="ring" id="ring" role="img" aria-label="نسبة إنجاز اليوم"><b id="ringNum">0<small>٪</small></b></div>
+          <div>
+            <h3>إنجاز اليوم</h3>
+            <p id="ringSub">لا مهام لهذا اليوم بعد</p>
+          </div>
+        </aside>
+      </div>
+
+      <div class="voice-bar" id="voiceBar">
+        <button class="mic" id="btnMic" aria-label="بدء التسجيل الصوتي" title="اضغط للتسجيل، ثم اضغط مرة أخرى عند الانتهاء">
+          <svg viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg>
+        </button>
+        <div class="voice-field">
+          <label for="voiceInput">تحدّث بحرّية أو اكتب، والمحلّل الذكي يتولّى الباقي</label>
+          <input id="voiceInput" type="text" placeholder="مثال: ذكرني بقراءة كتاب التاريخ غدًا الساعة 8 مساءً في المكتبة يوميًا">
+          <p class="voice-hint" id="voiceHint">يلتقط العنوان والوصف والتاريخ والوقت والتكرار والمكان، ويختار المسار المناسب.</p>
+        </div>
+        <div class="voice-actions">
+          <button class="btn btn-solid" id="btnParse">حلّل وأضف</button>
+        </div>
+      </div>
+
+      <div class="paths" id="pathCards"></div>
+
+      <div class="panel">
+        <div class="panel-h">
+          <h3 id="todayListTitle">مهام اليوم</h3>
+          <span class="count" id="todayCount"></span>
+          <button class="chip" id="chipHideDone" aria-pressed="false">إخفاء المنجز</button>
+        </div>
+        <div class="task-list" id="todayList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ صفحة: المهام المفتوحة ============ -->
+  <section class="page" id="p-open" hidden>
+    <div class="page-head">
+      <div>
+        <h1>مهام مفتوحة</h1>
+        <p>مهام بلا موعد ولا وقت محدّد. تبقى معك في القائمة حتى تُنجزها، ولا تختفي بانتهاء اليوم.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="quick">
+        <input id="openInput" placeholder="اكتب مهمة مفتوحة… مثل: مراجعة عقد الإيجار">
+        <select id="openPath" class="chip" style="padding:.55rem .8rem;border-radius:var(--r-sm)" aria-label="المسار"></select>
+        <button class="btn btn-solid" id="openAdd">أضف</button>
+      </div>
+      <div class="filter-row" id="openFilters">
+        <button class="chip" data-op="" aria-pressed="true">كل المسارات</button>
+      </div>
+      <div class="panel-h" style="border-top:0">
+        <h3 id="openTitle">قيد الانتظار</h3>
+        <span class="count" id="openCount"></span>
+        <button class="chip" id="chipOpenDone" aria-pressed="false">إظهار المنجز</button>
+      </div>
+      <div class="task-list" id="openList"></div>
+    </div>
+  </section>
+
+  <!-- ============ صفحة: التقويم ============ -->
+  <section class="page" id="p-cal" hidden>
+    <div class="page-head">
+      <div>
+        <h1>التقويم</h1>
+        <p>اختر يومًا لترى مهامه بمواعيدها وأماكنها وتكرارها.</p>
+      </div>
+    </div>
+    <div class="cal-wrap">
+      <div class="panel">
+        <div class="panel-h">
+          <h3 id="calTitle">—</h3>
+          <div class="cal-nav">
+            <button id="calPrev" aria-label="الشهر السابق"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+            <button id="calToday" aria-label="العودة لليوم"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="8.2" opacity=".45"/></svg></button>
+            <button id="calNext" aria-label="الشهر التالي"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          </div>
+        </div>
+        <div class="cal">
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="cal-legend" id="calLegend"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-h">
+          <h3 id="calListTitle">مهام اليوم</h3>
+          <span class="count" id="calCount"></span>
+          <button class="btn btn-sm" id="btnAdd3">+ مهمة</button>
+        </div>
+        <div class="task-list" id="calList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ صفحة: الإحصائيات ============ -->
+  <section class="page" id="p-stats" hidden>
+    <div class="page-head">
+      <div>
+        <h1>التوازن والإنجاز</h1>
+        <p>قراءة بصرية لحالتك في اليوم المحدّد.</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="panel chart-box">
+        <h3>بوصلة التوازن</h3>
+        <p>نسبة الإنجاز في كل مسار — كلما اتسع الشكل واتزن، كان نموّك أشمل.</p>
+        <div class="chart-holder"><canvas id="radar" aria-label="رسم راداري لتوازن المسارات"></canvas></div>
+      </div>
+      <div class="panel chart-box">
+        <h3>إنجاز اليوم</h3>
+        <p>ما أنجزته مقابل ما تبقّى من مهام اليوم.</p>
+        <div class="chart-holder"><canvas id="donut" aria-label="رسم دائري لنسبة الإنجاز اليومية"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ صفحة: التأمل ============ -->
+  <section class="page" id="p-journal" hidden>
+    <div class="page-head">
+      <div>
+        <h1>دفتر التأمل</h1>
+        <p>سطران في نهاية اليوم يصنعان الفرق.</p>
+      </div>
+    </div>
+    <div class="journal">
+      <div class="panel form-pad">
+        <div class="row2">
+          <div class="field"><label for="jDate">التاريخ</label><input type="date" id="jDate"></div>
+          <div class="field"><label for="jPath">المسار المرتبط</label><select id="jPath"></select></div>
+        </div>
+        <div class="field">
+          <label for="jText">ماذا لاحظت اليوم؟</label>
+          <textarea id="jText" placeholder="ما الذي منحك طاقة اليوم؟ وما الذي استنزفها؟"></textarea>
+        </div>
+        <button class="btn btn-solid" id="jSave">حفظ التأمل</button>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>سجلّك</h3><span class="count" id="jCount"></span></div>
+        <div class="entries" id="jList"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>مسارات النمو — بياناتك محفوظة في متصفحك وحده.</footer>
+
+<nav class="bottom" aria-label="التنقل السريع">
+  <ul>
+    <li><button data-go="today"><svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/><circle cx="12" cy="12" r="4.5"/></svg>اليوم</button></li>
+    <li><button data-go="open"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>مفتوحة<span class="dot" id="navDot" hidden></span></button></li>
+    <li><button data-go="cal"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>التقويم</button></li>
+    <li><button data-go="stats"><svg viewBox="0 0 24 24"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>إحصائيات</button></li>
+    <li><button data-go="journal"><svg viewBox="0 0 24 24"><path d="M6 4h11a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2z"/><path d="M6 16h13"/></svg>التأمل</button></li>
+  </ul>
+</nav>
+
+<!-- نافذة المهمة -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal">
+    <div class="modal-h">
+      <h3 id="mTitle">مهمة جديدة</h3>
+      <button class="icon-btn" id="mClose" aria-label="إغلاق" style="width:36px;height:36px">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-b">
+      <div class="parsed-note" id="parsedNote" hidden></div>
+      <div class="field"><label for="fTitle">العنوان</label><input id="fTitle" placeholder="ما الذي ستفعله؟"></div>
+      <div class="field"><label for="fDesc">الوصف</label><textarea id="fDesc" style="min-height:70px" placeholder="تفاصيل إضافية (اختياري)"></textarea></div>
+      <div class="field"><label>المسار</label><div class="path-pick" id="fPath"></div></div>
+      <div class="field">
+        <label for="fFreq">نوع المهمة</label>
+        <select id="fFreq">
+          <option value="open">مفتوحة — بلا موعد، تبقى حتى تُنجز</option>
+          <option value="once">بموعد محدّد — مرة واحدة</option>
+          <option value="daily">متكرّرة — يوميًا</option>
+          <option value="weekly">متكرّرة — أسبوعيًا</option>
+          <option value="monthly">متكرّرة — شهريًا</option>
+        </select>
+      </div>
+      <div class="row2">
+        <div class="field" id="wrapDate"><label for="fDate">التاريخ</label><input type="date" id="fDate"></div>
+        <div class="field" id="wrapTime"><label for="fTime">الوقت</label><input type="time" id="fTime"></div>
+      </div>
+      <div class="field"><label for="fLoc">الموقع</label><input id="fLoc" placeholder="الجيم، المكتب، المنزل…"></div>
+      <div class="field">
+        <label for="fImg">صورة مرفقة</label>
+        <div class="img-drop">
+          <img id="fImgPrev" alt="معاينة المرفق" hidden>
+          <input type="file" id="fImg" accept="image/*">
+          <button class="btn btn-sm btn-ghost" id="fImgClear" hidden>إزالة</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-solid" id="mSave">حفظ المهمة</button>
+      <button class="btn btn-ghost" id="mCancel">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div id="lightbox"><img id="lightboxImg" alt="مرفق المهمة"></div>
+<div id="toast" aria-live="polite"></div>
+
+<script>
+/* ===========================================================
+   0) تخزين آمن
+   =========================================================== */
+const Store = (() => {
+  let ok = true, mem = {};
+  try { const k='__fp__'; localStorage.setItem(k,'1'); localStorage.removeItem(k); } catch(e){ ok=false; }
+  return {
+    persistent: ok,
+    get(key, fb){ try { const v = ok ? localStorage.getItem(key) : mem[key]; return v==null ? fb : JSON.parse(v); } catch(e){ return fb; } },
+    set(key, val){ const s = JSON.stringify(val);
+      try { if(ok) localStorage.setItem(key, s); else mem[key]=s; }
+      catch(e){ mem[key]=s; toast('تعذّر الحفظ: مساحة التخزين ممتلئة.'); } }
+  };
+})();
+
+/* ===========================================================
+   1) الثوابت
+   =========================================================== */
+const PATHS = {
+  body:{ name:'الجسد', emoji:'🏋️', tag:'صحة • رياضة • تغذية • نوم' },
+  soul:{ name:'الروح', emoji:'🧘', tag:'تأمل • امتنان • عبادة • سكينة' },
+  mind:{ name:'العقل', emoji:'🧠', tag:'قراءة • تعلّم • مهارات • تركيز' },
+  out: { name:'العالم الخارجي', emoji:'🌍', tag:'عمل • مال • علاقات • بيئتك' }
+};
+const PKEYS = Object.keys(PATHS);
+const pathColor = p => css('--' + p);
+
+const KEYWORDS = {
+  body:['رياضه','تمرين','تمارين','جيم','نادي','مشي','جري','ركض','سباحه','دراجه','كره','يوغا','اطاله','حديد','عضلات','ماء','مويه','اشرب','شرب','نوم','انام','استيقاظ','فطور','غداء','عشاء','وجبه','اكل','تغذيه','بروتين','سعرات','ريجيم','دايت','وزن','صحه','طبيب','فيتامين','دواء','خطوه','خطوات','كارديو','ملعب','صيدليه','فحص','اسنان'],
+  soul:['تامل','اتامل','صلاه','صلي','اصلي','قران','ورد','ذكر','اذكار','دعاء','استغفار','تسبيح','خشوع','صيام','صوم','مسجد','جامع','امتنان','شكر','سكينه','روح','روحي','سلام داخلي','تزكيه','صدقه','زكاه','تهجد','قيام','خلوه','تنفس'],
+  mind:['قراءه','اقرا','كتاب','كتب','صفحه','صفحات','تعلم','اتعلم','دراسه','مذاكره','ادرس','دوره','كورس','محاضره','لغه','انجليزي','برمجه','كود','مهاره','تركيز','بحث','مقال','كتابه','اكتب','ملخص','تلخيص','واجب','امتحان','اختبار','شهاده','مكتبه','بودكاست','وثائقي','تفكير','حفظ','مراجعه'],
+  out:['عمل','شغل','وظيفه','اجتماع','ميتنج','مشروع','مقابله','عميل','زبون','ايميل','بريد','تقرير','عرض','مدير','فريق','راتب','مال','فلوس','ميزانيه','ادخار','استثمار','فاتوره','فواتير','دين','تسوق','سوق','شراء','تنظيف','ترتيب','غسيل','مطبخ','بيت','منزل','غرفه','سياره','عائله','اهل','امي','ابي','والدتي','والدي','صديق','اصدقاء','زياره','اتصال','اتصل','مكالمه','هديه','مناسبه','موعد','بنك','حكومي','معامله']
+};
+
+const QUOTES = [
+  ['ما الإنسان إلا عاداته، فإن أحسنت بناءها أحسنت بناء نفسك.','مثل عربي'],
+  ['على قدر أهل العزم تأتي العزائم، وتأتي على قدر الكرام المكارم.','المتنبي'],
+  ['من عرف أنّ الوقت هو عمره، لم يضيّعه في غير ما يبقى أثره.','ابن القيم'],
+  ['بقدر الكدّ تُكتسب المعالي، ومن طلب العلا سهر الليالي.','الشافعي'],
+  ['ابدأ صغيرًا، لكن ابدأ اليوم؛ فالخطوة الأولى تُنهي نصف الطريق.','حكمة'],
+  ['النفس كالطفل، إن تهمله شبّ على حبّ الرضاع.','أبو العتاهية'],
+  ['التوازن ليس أن تفعل كل شيء، بل ألّا تُهمل ما يستحق.','حكمة'],
+  ['العلم يرفع بيتًا لا عماد له، والجهل يهدم بيت العزّ والكرم.','الزبيدي'],
+  ['اجعل ليلك مراجعة، ونهارك محاولة، ولا تطلب الكمال دفعة واحدة.','حكمة'],
+  ['إن لم تزرع اليوم ظلًّا، فلا تنتظر غدًا راحة.','مثل'],
+  ['أعقل الناس أعذرهم للناس، وأشدّهم محاسبةً لنفسه.','قول مأثور'],
+  ['لا تحتقر عملًا صغيرًا يتكرر؛ فالنهر من قطرة، والجبل من حصاة.','حكمة'],
+  ['من صبر على تعب التعلّم ساعة، نجا من ذلّ الجهل عمرًا.','قول مأثور'],
+  ['الراحة بعد العمل نعمة، والراحة قبله مرض.','حكمة'],
+  ['كن كالشمس: تُشرق كل يوم من جديد دون أن تنتظر شكرًا.','حكمة']
+];
+
+const MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const DOW_SHORT = ['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+const DOW_FULL = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const FREQ_AR = { open:'مفتوحة', once:'', daily:'يوميًا', weekly:'أسبوعيًا', monthly:'شهريًا' };
+
+/* ===========================================================
+   2) أدوات
+   =========================================================== */
+const $  = (s,r=document) => r.querySelector(s);
+const $$ = (s,r=document) => [...r.querySelectorAll(s)];
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const pad = n => String(n).padStart(2,'0');
+const dstr = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today = () => dstr(new Date());
+const parseD = s => new Date(s + 'T00:00:00');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function fmtDate(s){
+  if(!s) return '';
+  if(s === today()) return 'اليوم';
+  const diff = Math.round((parseD(s) - parseD(today())) / 86400000);
+  if(diff === 1) return 'غدًا';
+  if(diff === -1) return 'أمس';
+  const d = parseD(s);
+  return `${DOW_SHORT[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+}
+function fmtLong(s){
+  const d = parseD(s);
+  return `${DOW_FULL[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+function fmtTime(t){
+  if(!t) return '';
+  let [h,m] = t.split(':').map(Number);
+  const p = h < 12 ? 'صباحًا' : (h < 17 ? 'ظهرًا' : 'مساءً');
+  let h12 = h % 12; if(h12 === 0) h12 = 12;
+  return `${h12}:${pad(m)} ${p}`;
+}
+function toast(msg){
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  $('#toast').appendChild(el);
+  setTimeout(() => { el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),320); }, 3300);
+}
+function cheer(color, big){
+  if(typeof confetti !== 'function') return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const base = { colors:[color, css('--gold'), '#ffffff'], disableForReducedMotion:true };
+  if(big){
+    confetti({ ...base, particleCount:140, spread:95, startVelocity:48, origin:{ y:.62 } });
+    setTimeout(()=>confetti({ ...base, particleCount:80, spread:120, scalar:.8, origin:{ y:.55 } }), 220);
+  } else {
+    confetti({ ...base, particleCount:42, spread:58, scalar:.8, startVelocity:28, origin:{ y:.72 } });
+  }
+}
+
+/* ===========================================================
+   3) الحالة
+   =========================================================== */
+let tasks   = Store.get('fp.tasks', []);
+let journal = Store.get('fp.journal', []);
+let selDate = today();
+let calCur  = new Date();
+let pathFilter = '';
+let openFilter = '';
+let hideDone = false;
+let showOpenDone = false;
+let page = 'today';
+let editingId = null, pendingImg = null, modalPath = 'out';
+let radarChart, donutChart;
+
+const saveTasks   = () => Store.set('fp.tasks', tasks);
+const saveJournal = () => Store.set('fp.journal', journal);
+
+/* ترقية البيانات القديمة: مهمة بلا موعد تصبح مهمة مفتوحة */
+tasks.forEach(t => { if(t.freq === 'once' && !t.date) t.freq = 'open'; t.doneDates = t.doneDates || []; });
+
+/* ===========================================================
+   4) المظهر
+   =========================================================== */
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  Store.set('fp.theme', t);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.content = t === 'dark' ? '#0C101A' : '#E9ECF2';
+  if(radarChart) setTimeout(buildCharts, 60);
+}
+setTheme(Store.get('fp.theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+$('#btnTheme').onclick = () => setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+
+/* ===========================================================
+   5) الاقتباس
+   =========================================================== */
+let qIdx = Store.get('fp.q', Math.floor(Math.random() * QUOTES.length));
+function showQuote(){
+  const [q,s] = QUOTES[qIdx % QUOTES.length];
+  const el = $('#quoteText');
+  el.style.opacity = 0;
+  setTimeout(() => { el.textContent = q; $('#quoteSrc').textContent = '— ' + s; el.style.transition = 'opacity .45s'; el.style.opacity = 1; }, 160);
+}
+$('#btnQuote').onclick = () => { qIdx = (qIdx + 1 + Math.floor(Math.random()*3)) % QUOTES.length; Store.set('fp.q', qIdx); showQuote(); };
+showQuote();
+
+/* ===========================================================
+   6) المحلّل الذكي المحلي
+   =========================================================== */
+function lightNorm(s){
+  return s.replace(/[\u064B-\u0652\u0640]/g,'')
+          .replace(/[\u0660-\u0669]/g, d => String.fromCharCode(d.charCodeAt(0) - 0x0660 + 48))
+          .replace(/\s+/g,' ').trim();
+}
+function normalize(s){
+  return lightNorm(s)
+    .replace(/[\u0625\u0623\u0622\u0671]/g,'\u0627').replace(/\u0649/g,'\u064A')
+    .replace(/\u0624/g,'\u0648').replace(/\u0626/g,'\u064A').replace(/\u0629/g,'\u0647');
+}
+const rx = (p, f='') => new RegExp(`(^|[\\s،.؛])(?:${p})(?=[\\s،.؛]|$)`, f);
+
+const HOUR_WORDS = {'الواحده':1,'الثانيه':2,'الثالثه':3,'الرابعه':4,'الخامسه':5,'السادسه':6,'السابعه':7,'الثامنه':8,'التاسعه':9,'العاشره':10,'الحاديه عشر':11,'الثانيه عشر':12};
+const PRAYERS = {'الفجر':'05:00','الظهر':'12:30','العصر':'15:45','المغرب':'18:15','العشاء':'19:45'};
+const PLACES = ['الجيم','النادي','المكتب','البيت','المنزل','الحديقة','المسجد','الجامع','المدرسة','الجامعة','المكتبة','السوق','المطعم','المقهى','الكافيه','العمل','المستشفى','العيادة','الشركة','الشاطئ','الملعب','المطبخ','الصالة','الغرفة','البنك','المزرعة','الشارع'];
+const NOT_PLACE = new Set(['الساعه','الصباح','المساء','اليوم','الليل','الظهر','العصر','الفجر','المغرب','العشاء','البدايه','النهايه','الاسبوع','الشهر','السنه','الوقت','المره']);
+
+function addDays(n){ const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + n); return dstr(d); }
+function nextDow(target){
+  const d = new Date(); d.setHours(0,0,0,0);
+  let diff = (target - d.getDay() + 7) % 7; if(diff === 0) diff = 7;
+  d.setDate(d.getDate() + diff); return dstr(d);
+}
+
+function smartParse(raw){
+  /* نحتفظ بالكلمات الأصلية ونعمل على نسخة مطبّعة موازية،
+     فيبقى العنوان بحروفه الصحيحة (الهمزات والتاء المربوطة). */
+  const orig = lightNorm(raw).split(' ');
+  let work = orig.map(normalize).join(' ');
+  const MARK = '\u0001';
+
+  function strike(re){
+    work = work.replace(re, (full, g1) => {
+      g1 = g1 || '';
+      const n = full.slice(g1.length).trim().split(/\s+/).filter(Boolean).length;
+      return g1 + Array(Math.max(n,1)).fill(MARK).join(' ');
+    });
+  }
+
+  const res = { title:'', desc:'', path:'', date:'', time:'', freq:'once', loc:'', hits:[] };
+
+  /* --- التكرار --- */
+  const freqRules = [
+    ['daily',  rx('كل ?يوم|يوميا|كل صباح|كل مساء|كل ليله|يومي')],
+    ['weekly', rx('كل اسبوع|اسبوعيا|اسبوعي')],
+    ['monthly',rx('كل شهر|شهريا|شهري')]
+  ];
+  for(const [f, re] of freqRules){
+    if(re.test(work)){ res.freq = f; strike(re); }
+  }
+  const DOWN = ['الاحد','الاثنين|الاتنين','الثلاثاء','الاربعاء','الخميس','الجمعه','السبت'];
+  DOWN.forEach((names, i) => {
+    const re = rx(`كل (?:يوم )?(?:${names})`);
+    if(re.test(work)){ res.freq = 'weekly'; res.date = nextDow(i); strike(re); res.hits.push('التاريخ'); }
+  });
+  if(res.freq !== 'once') res.hits.push('التكرار');
+
+  /* --- التاريخ --- */
+  const dateRules = [
+    [rx('بعد غد|بعد بكره'), () => addDays(2)],
+    [rx('اليوم'),            () => today()],
+    [rx('غدا|غدن|بكره|بكرا|الغد'), () => addDays(1)],
+    [rx('بعد اسبوعين'),      () => addDays(14)],
+    [rx('بعد اسبوع'),        () => addDays(7)],
+    [rx('بعد شهر'),          () => addDays(30)],
+    [rx('نهايه الاسبوع'),    () => nextDow(5)]
+  ];
+  if(!res.date) for(const [re, fn] of dateRules){
+    if(re.test(work)){ res.date = fn(); strike(re); res.hits.push('التاريخ'); break; }
+  }
+  if(!res.date){
+    const re = /(^|[\s،.؛])بعد (?:\d+|يومين|ثلاثه|اربعه|خمسه) (?:ايام|يوم)/;
+    const mm = work.match(re);
+    if(mm){
+      const map = { 'يومين':2,'ثلاثه':3,'اربعه':4,'خمسه':5 };
+      const w = mm[0].split(' ').filter(Boolean)[1];
+      res.date = addDays(map[w] || parseInt(w,10) || 1);
+      strike(re); res.hits.push('التاريخ');
+    }
+  }
+  if(!res.date) for(let i = 0; i < DOWN.length; i++){
+    const re = rx(`(?:يوم )?(?:${DOWN[i]})(?: القادم| المقبل| الجاي)?`);
+    if(re.test(work)){ res.date = nextDow(i); strike(re); res.hits.push('التاريخ'); break; }
+  }
+  if(!res.date){
+    const re = /(^|[\s،.؛])(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?(?=[\s،.؛]|$)/;
+    const md = work.match(re);
+    if(md){
+      const y = md[4] ? (md[4].length === 2 ? 2000 + +md[4] : +md[4]) : new Date().getFullYear();
+      res.date = `${y}-${pad(+md[3])}-${pad(+md[2])}`;
+      strike(re); res.hits.push('التاريخ');
+    }
+  }
+
+  /* --- الوقت --- */
+  const perRe = /(^|[\s،.؛])(صباحا|الصباح|مساء|مساءا|المساء|ظهرا|الظهيره|عصرا|ليلا|الليل)(?=[\s،.؛]|$)/;
+  let got = false;
+  const numRe = /(^|[\s،.؛])(?:الساعه |على )?(\d{1,2})(?::(\d{2}))?(?:\s*(صباحا|الصباح|مساء|مساءا|المساء|ظهرا|عصرا|ليلا))?(?=[\s،.؛]|$)/;
+  const nm = work.match(numRe);
+  if(nm && (nm[4] || /(^|\s)الساعه\s/.test(work))){
+    let h = +nm[2], mi = nm[3] ? +nm[3] : 0, mark = nm[4] || '';
+    if(h >= 0 && h <= 23){
+      if(/مساء|ليلا|عصرا|المساء/.test(mark) && h < 12) h += 12;
+      else if(/ظهرا/.test(mark) && h < 12) h = 12;
+      else if(/صباحا|الصباح/.test(mark) && h === 12) h = 0;
+      else if(!mark && h >= 1 && h <= 7) h += 12;
+      res.time = `${pad(h)}:${pad(mi)}`;
+      strike(numRe); strike(rx('الساعه'));
+      res.hits.push('الوقت'); got = true;
+    }
+  }
+  if(!got) for(const [w,h] of Object.entries(HOUR_WORDS)){
+    const re = rx(`(?:الساعه )?${w}`);
+    if(re.test(work)){
+      let hh = h; const mk = work.match(perRe);
+      if(mk && /مساء|ليل|عصر/.test(mk[2]) && hh < 12) hh += 12;
+      else if(!mk && hh >= 1 && hh <= 7) hh += 12;
+      res.time = `${pad(hh)}:00`;
+      strike(re); if(mk) strike(perRe);
+      res.hits.push('الوقت'); got = true; break;
+    }
+  }
+  if(!got && /(صلاه|اذان|بعد|قبل|عند|وقت)/.test(work)){
+    for(const [w,v] of Object.entries(PRAYERS)){
+      const re = rx(`(?:بعد |قبل |عند |وقت )?${normalize(w)}`);
+      if(re.test(work)){ res.time = v; strike(re); res.hits.push('الوقت'); got = true; break; }
+    }
+  }
+  if(!got){
+    const mk = work.match(perRe);
+    if(mk){
+      const s = mk[2];
+      res.time = /صباح/.test(s) ? '08:00' : /ظهر/.test(s) ? '12:30' : /عصر/.test(s) ? '16:00' : /ليل/.test(s) ? '21:00' : '19:00';
+      strike(perRe); res.hits.push('الوقت');
+    }
+  }
+
+  /* --- الموقع --- */
+  function findPlace(prefixes, guard){
+    for(const pl of PLACES){
+      const body = normalize(pl).replace(/^ال/,'');
+      const re = new RegExp(`(^|[\\s،.؛])(?:${prefixes})\\s?(?:ال)?${body}(?=[\\s،.؛]|$)`);
+      const m = re.exec(work);
+      if(!m) continue;
+      /* «اتصل بالبنك» ليست مكانًا بل مفعولًا به */
+      if(guard && guard.test(work.slice(0, m.index + m[1].length))) continue;
+      res.loc = pl; strike(re); res.hits.push('الموقع'); return true;
+    }
+    return false;
+  }
+  findPlace('في|فى|عند') || findPlace('بال|ب', /(?:اتصل|كلم|تواصل|راسل|ابلغ|اخبر|ذكر)\s*$/);
+  if(!res.loc){
+    const re = /(^|[\s،.؛])(?:في|عند)\s(ال[\u0621-\u064A]{3,})(?=[\s،.؛]|$)/;
+    const lm = work.match(re);
+    if(lm && !NOT_PLACE.has(lm[2])){
+      const i = work.split(' ').indexOf(lm[2]);
+      res.loc = (i > -1 && orig[i]) ? orig[i] : lm[2];
+      strike(re); res.hits.push('الموقع');
+    }
+  }
+
+  /* --- المسار --- */
+  const flat = normalize(raw);
+  let best = '', bestScore = 0;
+  for(const p of PKEYS){
+    let score = 0;
+    for(const k of KEYWORDS[p]) if(flat.includes(k)) score++;
+    if(score > bestScore){ bestScore = score; best = p; }
+  }
+  res.path = best || 'out';
+  if(best) res.hits.push('المسار');
+
+  /* --- العنوان والوصف بالحروف الأصلية --- */
+  const wt = work.split(' ');
+  let rest = (wt.length === orig.length)
+    ? orig.map((w, i) => {
+        if(!wt[i].includes(MARK)) return w;
+        const sep = w.match(/[،؛.]$/);      /* نُبقي الفاصلة لتفصل الوصف عن العنوان */
+        return sep ? sep[0] : '';
+      }).filter(Boolean).join(' ')
+    : work.split(MARK).join(' ');
+  rest = rest.replace(/\s+/g,' ').trim();
+  rest = rest.replace(/^(?:ذكّرني|ذكرني|ذكريني|تذكير)\s*بـ?/,'').trim();
+  rest = rest.replace(/^(?:أضف|اضف|ضيف|سجّل|سجل|أنشئ|انشئ|إضافة|اضافة|أريد أن|اريد ان|أريد|اريد|أحتاج أن|احتاج ان|لا تنسى|مهمة جديدة|مهمه جديده|مهمة|مهمه|جدول لي|جدول|خطط لـ?)\s*/,'').trim();
+  rest = rest.replace(/^(?:لي|أن|ان|و)\s+/,'').trim();
+
+  const parts = rest.split(/\s*(?:،|؛|\.| - | – )\s*|\s(?:لأن|لان|علشان|عشان|حتى|من أجل|من اجل|الوصف|التفاصيل|ملاحظة|ملاحظه)\s/)
+                    .map(x => (x || '').trim()).filter(Boolean);
+  res.title = parts[0] || rest || lightNorm(raw);
+  res.desc  = parts.slice(1).join('، ');
+  if(res.title.length > 70){
+    res.desc = (res.title.slice(70) + ' ' + res.desc).trim();
+    res.title = res.title.slice(0, 70).trim();
+  }
+  if(!res.title) res.title = lightNorm(raw).slice(0, 70);
+  if(res.freq !== 'once' && !res.date) res.date = today();
+  res.hits = [...new Set(res.hits)];
+  return res;
+}
+
+/* ===========================================================
+   7) الإدخال الصوتي المستمر
+   =========================================================== */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog = null, wantListening = false, finalTxt = '', restartTimer = null;
+const DEFAULT_HINT = 'يلتقط العنوان والوصف والتاريخ والوقت والتكرار والمكان، ويختار المسار المناسب.';
+
+function micUI(on){
+  $('#btnMic').classList.toggle('rec', on);
+  $('#voiceBar').classList.toggle('live', on);
+  $('#btnMic').setAttribute('aria-label', on ? 'إنهاء التسجيل وتحليل ما قلته' : 'بدء التسجيل الصوتي');
+  $('#voiceHint').innerHTML = on
+    ? '<span class="live-dot"></span> أستمع إليك… خذ وقتك، ولن يتوقف التسجيل حتى تضغط «تم».'
+    : DEFAULT_HINT;
+  $('#btnParse').textContent = on ? 'تم — حلّل وأضف' : 'حلّل وأضف';
+}
+
+if(SR){
+  recog = new SR();
+  recog.lang = 'ar-SA';
+  recog.continuous = true;      /* لا يتوقف بعد أول جملة */
+  recog.interimResults = true;
+  recog.maxAlternatives = 1;
+
+  recog.onstart = () => micUI(true);
+
+  recog.onresult = (e) => {
+    let interim = '';
+    for(let i = e.resultIndex; i < e.results.length; i++){
+      const r = e.results[i];
+      if(r.isFinal) finalTxt += r[0].transcript + ' ';
+      else interim += r[0].transcript;
+    }
+    $('#voiceInput').value = (finalTxt + interim).replace(/\s+/g,' ').trim();
+  };
+
+  /* بعض المتصفحات تُنهي الجلسة تلقائيًا بعد صمت قصير — نعيد تشغيلها فورًا */
+  recog.onend = () => {
+    if(wantListening){
+      clearTimeout(restartTimer);
+      restartTimer = setTimeout(() => { try { recog.start(); } catch(e){} }, 220);
+    } else {
+      micUI(false);
+      finishVoice();
+    }
+  };
+
+  recog.onerror = (e) => {
+    if(e.error === 'no-speech' || e.error === 'aborted') return;   /* نتجاهلها ونواصل */
+    wantListening = false; micUI(false);
+    toast(e.error === 'not-allowed'
+      ? 'اسمح للمتصفح باستخدام الميكروفون لتفعيل الإدخال الصوتي.'
+      : 'تعذّر الالتقاط الصوتي، اكتب أمرك بدلًا من ذلك.');
+  };
+}
+
+function startVoice(){
+  if(!SR){ toast('متصفحك لا يدعم الإدخال الصوتي — استخدم Chrome أو Edge، أو اكتب أمرك.'); $('#voiceInput').focus(); return; }
+  finalTxt = ''; $('#voiceInput').value = '';
+  wantListening = true;
+  try { recog.start(); micUI(true); } catch(e){ micUI(true); }
+}
+function stopVoice(){
+  wantListening = false;
+  clearTimeout(restartTimer);
+  try { recog.stop(); } catch(e){ finishVoice(); }
+}
+function finishVoice(){
+  const txt = $('#voiceInput').value.trim();
+  if(txt) setTimeout(() => runParse(txt), 150);
+}
+$('#btnMic').onclick = () => wantListening ? stopVoice() : startVoice();
+$('#btnParse').onclick = () => { if(wantListening){ stopVoice(); return; } runParse($('#voiceInput').value); };
+$('#voiceInput').addEventListener('keydown', e => { if(e.key === 'Enter') runParse(e.target.value); });
+
+function runParse(text){
+  if(!text || !text.trim()){ toast('قل أو اكتب ما تريد إضافته أولًا.'); return; }
+  const p = smartParse(text);
+  const flat = normalize(text);
+  if(/بدون موعد|بلا موعد|متى ما|في اي وقت|وقت الفراغ|مفتوحه|غير مستعجل/.test(flat)){
+    p.freq = 'open'; p.date = ''; p.time = ''; p.hits.push('مهمة مفتوحة');
+  } else if(p.freq === 'once' && !p.date && !p.time){
+    p.freq = 'open'; p.hits.push('مهمة مفتوحة');
+  }
+  p.title = p.title.replace(/\s*(?:بدون موعد|بلا موعد|متى ما تيسّر|متى ما تيسر|متى ما أمكن|متى ما امكن|متى ما|في أي وقت|في اي وقت|وقت الفراغ|غير مستعجل|مهمة مفتوحة)\s*/g,' ').replace(/\s+/g,' ').trim();
+  p.hits = [...new Set(p.hits)];
+  openModal(null, p);
+}
+
+/* ===========================================================
+   8) منطق المهام
+   =========================================================== */
+function occursOn(t, date){
+  if(t.freq === 'open')    return false;
+  if(t.freq === 'daily')   return !t.date || date >= t.date;
+  if(t.freq === 'weekly')  return !!t.date && date >= t.date && parseD(t.date).getDay() === parseD(date).getDay();
+  if(t.freq === 'monthly') return !!t.date && date >= t.date && +t.date.slice(8,10) === +date.slice(8,10);
+  return t.date === date;
+}
+const isDone = (t, date) => (t.freq === 'once' || t.freq === 'open')
+  ? (t.doneDates || []).length > 0
+  : (t.doneDates || []).includes(date);
+const dayTasks  = date => tasks.filter(t => occursOn(t, date));
+const openTasks = ()   => tasks.filter(t => t.freq === 'open');
+
+function stats(date){
+  const list = dayTasks(date);
+  const per = {}; PKEYS.forEach(p => per[p] = { total:0, done:0 });
+  list.forEach(t => { per[t.path].total++; if(isDone(t, date)) per[t.path].done++; });
+  const total = list.length, done = list.filter(t => isDone(t, date)).length;
+  return { per, total, done, pct: total ? Math.round(done / total * 100) : 0 };
+}
+
+function toggleTask(id){
+  const t = tasks.find(x => x.id === id); if(!t) return;
+  const date = (t.freq === 'once') ? (t.date || today()) : (t.freq === 'open' ? today() : selDate);
+  t.doneDates = t.doneDates || [];
+  const i = t.doneDates.indexOf(date);
+  if(i > -1) t.doneDates.splice(i, 1);
+  else {
+    t.doneDates.push(date);
+    if(t.freq === 'open'){
+      cheer(pathColor(t.path), false);
+    } else {
+      const s = stats(selDate);
+      const all = s.total > 0 && s.done === s.total;
+      cheer(pathColor(t.path), all);
+      if(all) toast('أنجزت كل مهام اليوم. نموّ متوازن يستحق الاحتفاء 🌿');
+    }
+  }
+  saveTasks(); renderAll();
+}
+function deleteTask(id){
+  tasks = tasks.filter(t => t.id !== id);
+  saveTasks(); renderAll(); toast('حُذفت المهمة.');
+}
+
+/* ===========================================================
+   9) رسم عناصر المهام
+   =========================================================== */
+function taskHTML(t, refDate){
+  const d = isDone(t, refDate);
+  const meta = [
+    `<b>${PATHS[t.path].emoji} ${PATHS[t.path].name}</b>`,
+    t.freq === 'open' ? '♾️ بلا موعد' : '',
+    (t.date && t.freq === 'once') ? `📅 ${fmtDate(t.date)}` : '',
+    t.time ? `🕐 ${fmtTime(t.time)}` : '',
+    (t.freq !== 'once' && t.freq !== 'open') ? `🔁 ${FREQ_AR[t.freq]}` : '',
+    t.loc ? `📍 ${esc(t.loc)}` : ''
+  ].filter(Boolean).join('<span class="sep">|</span>');
+  return `<div class="task ${d ? 'done' : ''}" style="--c:var(--${t.path})">
+    <button class="check" data-t="${t.id}" aria-label="${d ? 'إلغاء الإنجاز' : 'تعليم كمنجز'}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+    <div class="t-body">
+      <span class="t-title">${esc(t.title)}</span>
+      ${t.desc ? `<p class="t-desc">${esc(t.desc)}</p>` : ''}
+      <div class="t-meta">${meta}</div>
+    </div>
+    ${t.img ? `<img class="t-thumb" src="${t.img}" alt="مرفق" data-img="${t.id}">` : ''}
+    <div class="t-act">
+      <button data-edit="${t.id}" aria-label="تعديل"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.5 2.5 0 0 0-3.5-3.5L4.5 16.5z"/></svg></button>
+      <button data-del="${t.id}" aria-label="حذف"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6.5 7l1 13h9l1-13"/></svg></button>
+    </div>
+  </div>`;
+}
+function bindTasks(root){
+  $$('.check', root).forEach(b => b.onclick = () => toggleTask(b.dataset.t));
+  $$('[data-del]', root).forEach(b => b.onclick = () => deleteTask(b.dataset.del));
+  $$('[data-edit]', root).forEach(b => b.onclick = () => openModal(b.dataset.edit, null));
+  $$('.t-thumb', root).forEach(b => b.onclick = () => { $('#lightboxImg').src = b.src; $('#lightbox').classList.add('open'); });
+}
+$('#lightbox').onclick = () => $('#lightbox').classList.remove('open');
+
+/* ===========================================================
+   10) صفحة اليوم
+   =========================================================== */
+function renderToday(){
+  $('#todayDate').textContent = fmtLong(today());
+  const s = stats(today());
+
+  $('#pathCards').innerHTML = PKEYS.map(p => {
+    const d = s.per[p], pct = d.total ? Math.round(d.done / d.total * 100) : 0;
+    const openN = openTasks().filter(t => t.path === p && !isDone(t)).length;
+    return `<button class="path-card" data-p="${p}" style="--c:var(--${p})" aria-pressed="${pathFilter === p}">
+      <span class="pc-top"><span class="pc-emoji">${PATHS[p].emoji}</span><h3>${PATHS[p].name}</h3></span>
+      <p class="pc-sub">${PATHS[p].tag}</p>
+      <span class="pc-num">${d.done}<span> / ${d.total} اليوم</span></span>
+      <span class="bar"><i style="width:${pct}%"></i></span>
+      <span class="pc-open">${openN ? `♾️ ${openN} مهمة مفتوحة بانتظارك` : '♾️ لا مهام مفتوحة'}</span>
+    </button>`;
+  }).join('');
+  $$('#pathCards .path-card').forEach(b => b.onclick = () => {
+    pathFilter = pathFilter === b.dataset.p ? '' : b.dataset.p;
+    renderToday();
+  });
+
+  $('#ring').style.setProperty('--p', s.pct);
+  $('#ringNum').innerHTML = s.pct + '<small>٪</small>';
+  $('#ringSub').textContent = s.total ? `${s.done} من ${s.total} مهمة مكتملة` : 'لا مهام مجدولة اليوم';
+
+  let list = dayTasks(today());
+  if(pathFilter) list = list.filter(t => t.path === pathFilter);
+  if(hideDone)   list = list.filter(t => !isDone(t, today()));
+  list.sort((a,b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+
+  $('#todayListTitle').textContent = pathFilter ? `مهام اليوم — ${PATHS[pathFilter].name}` : 'مهام اليوم';
+  $('#todayCount').textContent = `${s.done} / ${s.total}`;
+  $('#todayList').innerHTML = list.length
+    ? list.map(t => taskHTML(t, today())).join('')
+    : `<div class="empty"><b>لا مهام مجدولة</b>قل أو اكتب جملة واحدة في الأعلى، مثل: «تمرين كتف غدًا الساعة 6 مساءً في الجيم».</div>`;
+  bindTasks($('#todayList'));
+}
+$('#chipHideDone').onclick = () => {
+  hideDone = !hideDone;
+  $('#chipHideDone').setAttribute('aria-pressed', hideDone);
+  renderToday();
+};
+
+/* ===========================================================
+   11) صفحة المهام المفتوحة
+   =========================================================== */
+function renderOpen(){
+  const all = openTasks();
+  const pending = all.filter(t => !isDone(t));
+  $('#tabBadge').hidden = pending.length === 0;
+  $('#tabBadge').textContent = pending.length;
+  $('#navDot').hidden = pending.length === 0;
+
+  $('#openFilters').innerHTML = `<button class="chip" data-op="" aria-pressed="${openFilter === ''}">كل المسارات</button>` +
+    PKEYS.map(p => {
+      const n = pending.filter(t => t.path === p).length;
+      return `<button class="chip" data-op="${p}" aria-pressed="${openFilter === p}">${PATHS[p].emoji} ${PATHS[p].name}${n ? ` (${n})` : ''}</button>`;
+    }).join('');
+  $$('#openFilters .chip').forEach(b => b.onclick = () => { openFilter = b.dataset.op; renderOpen(); });
+
+  let list = showOpenDone ? all : pending;
+  if(openFilter) list = list.filter(t => t.path === openFilter);
+
+  $('#openCount').textContent = `${pending.length} بانتظارك • ${all.length - pending.length} منجزة`;
+  $('#openTitle').textContent = showOpenDone ? 'كل المهام المفتوحة' : 'قيد الانتظار';
+  $('#chipOpenDone').textContent = showOpenDone ? 'إخفاء المنجز' : 'إظهار المنجز';
+
+  if(!list.length){
+    $('#openList').innerHTML = `<div class="empty"><b>لا شيء معلّق</b>المهام المفتوحة مناسبة لما لا يرتبط بموعد: مكالمة، فكرة، إصلاح صغير.</div>`;
+    return;
+  }
+  let html = '';
+  PKEYS.forEach(p => {
+    const g = list.filter(t => t.path === p);
+    if(!g.length) return;
+    if(!openFilter) html += `<div class="group-h"><i style="background:var(--${p})"></i>${PATHS[p].name} <span>${g.filter(t=>!isDone(t)).length} بانتظارك</span></div>`;
+    html += g.sort((a,b) => isDone(a) - isDone(b)).map(t => taskHTML(t, today())).join('');
+  });
+  $('#openList').innerHTML = html;
+  bindTasks($('#openList'));
+}
+$('#chipOpenDone').onclick = () => {
+  showOpenDone = !showOpenDone;
+  $('#chipOpenDone').setAttribute('aria-pressed', showOpenDone);
+  renderOpen();
+};
+$('#openPath').innerHTML = PKEYS.map(p => `<option value="${p}">${PATHS[p].emoji} ${PATHS[p].name}</option>`).join('');
+function addOpenQuick(){
+  const v = $('#openInput').value.trim();
+  if(!v){ $('#openInput').focus(); return; }
+  const g = smartParse(v);
+  tasks.push({ id:uid(), title:g.title || v, desc:g.desc || '', path:$('#openPath').value,
+               date:'', time:'', freq:'open', loc:g.loc || '', img:null, doneDates:[], created:today() });
+  saveTasks(); $('#openInput').value = ''; renderAll();
+  toast('أُضيفت إلى المهام المفتوحة.');
+}
+$('#openAdd').onclick = addOpenQuick;
+$('#openInput').addEventListener('keydown', e => { if(e.key === 'Enter') addOpenQuick(); });
+
+/* ===========================================================
+   12) صفحة التقويم
+   =========================================================== */
+function renderCal(){
+  const y = calCur.getFullYear(), m = calCur.getMonth();
+  $('#calTitle').textContent = `${MONTHS[m]} ${y}`;
+  const first = new Date(y, m, 1).getDay();
+  const days = new Date(y, m + 1, 0).getDate();
+  const prevDays = new Date(y, m, 0).getDate();
+  let html = DOW_SHORT.map(d => `<span class="dow">${d}</span>`).join('');
+  for(let i = first - 1; i >= 0; i--) html += `<span class="day pad">${prevDays - i}</span>`;
+  for(let d = 1; d <= days; d++){
+    const ds = `${y}-${pad(m+1)}-${pad(d)}`;
+    const dots = [...new Set(dayTasks(ds).map(t => t.path))].slice(0,4)
+      .map(p => `<i style="background:var(--${p})"></i>`).join('');
+    const cls = ['day', ds === today() ? 'today' : '', ds === selDate ? 'sel' : ''].filter(Boolean).join(' ');
+    html += `<button class="${cls}" data-d="${ds}"><span>${d}</span><span class="dots">${dots}</span></button>`;
+  }
+  const rest = (7 - ((first + days) % 7)) % 7;
+  for(let i = 1; i <= rest; i++) html += `<span class="day pad">${i}</span>`;
+  $('#calGrid').innerHTML = html;
+  $$('#calGrid .day[data-d]').forEach(b => b.onclick = () => { selDate = b.dataset.d; renderCal(); renderCalList(); buildCharts(); });
+  $('#calLegend').innerHTML = PKEYS.map(p => `<span><i style="background:var(--${p})"></i>${PATHS[p].name}</span>`).join('');
+}
+function renderCalList(){
+  const list = dayTasks(selDate).sort((a,b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+  const s = stats(selDate);
+  $('#calListTitle').textContent = selDate === today() ? 'مهام اليوم' : 'مهام ' + fmtLong(selDate);
+  $('#calCount').textContent = s.total ? `${s.done} / ${s.total}` : '';
+  $('#calList').innerHTML = list.length
+    ? list.map(t => taskHTML(t, selDate)).join('')
+    : `<div class="empty"><b>يوم خالٍ</b>أضف مهمة لهذا اليوم، أو اجعلها مهمة مفتوحة بلا موعد.</div>`;
+  bindTasks($('#calList'));
+}
+$('#calPrev').onclick  = () => { calCur.setMonth(calCur.getMonth() - 1); renderCal(); };
+$('#calNext').onclick  = () => { calCur.setMonth(calCur.getMonth() + 1); renderCal(); };
+$('#calToday').onclick = () => { calCur = new Date(); selDate = today(); renderCal(); renderCalList(); buildCharts(); };
+
+/* ===========================================================
+   13) الرسوم البيانية
+   =========================================================== */
+const chartFont = () => ({ family:'IBM Plex Sans Arabic', size:12 });
+function buildCharts(){ buildRadar(); buildDonut(); }
+
+function buildRadar(){
+  const s = stats(selDate);
+  const data = PKEYS.map(p => s.per[p].total ? Math.round(s.per[p].done / s.per[p].total * 100) : 0);
+  if(radarChart) radarChart.destroy();
+  radarChart = new Chart($('#radar').getContext('2d'), {
+    type:'radar',
+    data:{ labels: PKEYS.map(p => PATHS[p].name),
+      datasets:[{ label:'نسبة الإنجاز', data, fill:true,
+        backgroundColor: css('--gold') + '33', borderColor: css('--gold'), borderWidth:2,
+        pointBackgroundColor: PKEYS.map(pathColor), pointBorderColor: css('--surface'),
+        pointBorderWidth:2, pointRadius:5, pointHoverRadius:7 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:false },
+        tooltip:{ rtl:true, textDirection:'rtl', bodyFont:chartFont(), titleFont:chartFont(),
+          callbacks:{ label: c => ` ${c.raw}٪ من مهام هذا المسار` } } },
+      scales:{ r:{ min:0, max:100,
+        angleLines:{ color: css('--line') }, grid:{ color: css('--line') },
+        pointLabels:{ font:{ family:'Reem Kufi', size:14 }, color: css('--ink') },
+        ticks:{ stepSize:25, backdropColor:'transparent', color: css('--ink-3'), font:{ size:10 } } } } }
+  });
+}
+function buildDonut(){
+  const s = stats(selDate);
+  const empty = s.total === 0;
+  if(donutChart) donutChart.destroy();
+  donutChart = new Chart($('#donut').getContext('2d'), {
+    type:'doughnut',
+    data:{ labels: empty ? ['لا مهام'] : ['منجز','متبقٍ'],
+      datasets:[{ data: empty ? [1] : [s.done, s.total - s.done],
+        backgroundColor: empty ? [css('--line')] : [css('--gold'), css('--line')],
+        borderColor: css('--surface'), borderWidth:3, hoverOffset:6 }] },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'68%',
+      plugins:{ legend:{ position:'bottom', rtl:true, textDirection:'rtl',
+          labels:{ font:chartFont(), color: css('--ink-2'), usePointStyle:true, pointStyle:'circle', padding:16 } },
+        tooltip:{ enabled:!empty, rtl:true, textDirection:'rtl', bodyFont:chartFont() } } }
+  });
+}
+
+/* ===========================================================
+   14) دفتر التأمل
+   =========================================================== */
+$('#jPath').innerHTML = PKEYS.map(p => `<option value="${p}">${PATHS[p].emoji} ${PATHS[p].name}</option>`).join('');
+$('#jDate').value = today();
+$('#jSave').onclick = () => {
+  const txt = $('#jText').value.trim();
+  if(!txt){ toast('اكتب ملاحظتك قبل الحفظ.'); $('#jText').focus(); return; }
+  journal.unshift({ id:uid(), date: $('#jDate').value || today(), path: $('#jPath').value, text: txt });
+  saveJournal(); $('#jText').value = ''; renderJournal(); toast('حُفظ التأمل في سجلّك.');
+};
+function renderJournal(){
+  $('#jCount').textContent = journal.length ? `${journal.length} تدوينة` : '';
+  if(!journal.length){
+    $('#jList').innerHTML = `<div class="empty"><b>السجل فارغ</b>أول تدوينة تحتاج سطرًا واحدًا فقط.</div>`;
+    return;
+  }
+  $('#jList').innerHTML = journal.map(e => `<article class="entry" style="--c:var(--${e.path})">
+      <div class="entry-h">
+        <b>${PATHS[e.path].emoji} ${PATHS[e.path].name}</b><span>${fmtDate(e.date)}</span>
+        <button data-j="${e.id}" style="margin-inline-start:auto;color:var(--ink-3)" aria-label="حذف التدوينة">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M9 7V5h6v2M6.5 7l1 13h9l1-13"/></svg></button>
+      </div>
+      <p>${esc(e.text)}</p>
+    </article>`).join('');
+  $$('#jList [data-j]').forEach(b => b.onclick = () => { journal = journal.filter(x => x.id !== b.dataset.j); saveJournal(); renderJournal(); });
+}
+
+/* ===========================================================
+   15) نافذة المهمة
+   =========================================================== */
+$('#fPath').innerHTML = PKEYS.map(p =>
+  `<button type="button" data-p="${p}" style="--c:var(--${p})" aria-pressed="false"><span style="font-size:1.2rem">${PATHS[p].emoji}</span>${PATHS[p].name}</button>`).join('');
+$$('#fPath button').forEach(b => b.onclick = () => setModalPath(b.dataset.p));
+function setModalPath(p){
+  modalPath = p;
+  $$('#fPath button').forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p));
+}
+function syncFreqFields(){
+  const open = $('#fFreq').value === 'open';
+  $('#wrapDate').classList.toggle('off', open);
+  $('#wrapTime').classList.toggle('off', open);
+  if(open){ $('#fDate').value = ''; $('#fTime').value = ''; }
+  else if(!$('#fDate').value) $('#fDate').value = selDate;
+}
+$('#fFreq').onchange = syncFreqFields;
+
+function openModal(id, parsed){
+  editingId = id; pendingImg = null;
+  const t = id ? tasks.find(x => x.id === id) : null;
+  $('#mTitle').textContent = id ? 'تعديل المهمة' : 'مهمة جديدة';
+  $('#fTitle').value = t ? t.title : (parsed ? parsed.title : '');
+  $('#fDesc').value  = t ? (t.desc || '') : (parsed ? parsed.desc : '');
+  $('#fFreq').value  = t ? t.freq : (parsed ? parsed.freq : 'open');
+  $('#fDate').value  = t ? (t.date || '') : (parsed ? parsed.date : '');
+  $('#fTime').value  = t ? (t.time || '') : (parsed ? parsed.time : '');
+  $('#fLoc').value   = t ? (t.loc || '') : (parsed ? parsed.loc : '');
+  setModalPath(t ? t.path : (parsed ? parsed.path : 'out'));
+  pendingImg = t ? (t.img || null) : null;
+  showImg(pendingImg);
+  syncFreqFields();
+
+  const note = $('#parsedNote');
+  if(parsed && parsed.hits.length){
+    note.innerHTML = `<span>تعرّف المحلّل تلقائيًا على:</span>` +
+      parsed.hits.map(h => `<span><b>${h}</b> ✓</span>`).join('') + `<span>عدّل ما تشاء قبل الحفظ.</span>`;
+    note.hidden = false;
+  } else if(parsed){
+    note.innerHTML = `<span>لم يجد المحلّل موعدًا واضحًا — حُفظت كمهمة مفتوحة، غيّرها إن أردت.</span>`;
+    note.hidden = false;
+  } else note.hidden = true;
+
+  $('#overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => $('#fTitle').focus(), 120);
+}
+function closeModal(){
+  $('#overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  editingId = null; pendingImg = null;
+}
+function showImg(src){
+  const img = $('#fImgPrev'), clr = $('#fImgClear');
+  if(src){ img.src = src; img.hidden = false; clr.hidden = false; }
+  else { img.hidden = true; clr.hidden = true; img.removeAttribute('src'); $('#fImg').value = ''; }
+}
+$('#fImg').onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    const im = new Image();
+    im.onload = () => {
+      const max = 520, s = Math.min(1, max / Math.max(im.width, im.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      pendingImg = c.toDataURL('image/jpeg', .72);
+      showImg(pendingImg);
+    };
+    im.src = r.result;
+  };
+  r.readAsDataURL(f);
+};
+$('#fImgClear').onclick = () => { pendingImg = null; showImg(null); };
+
+$('#mSave').onclick = () => {
+  const title = $('#fTitle').value.trim();
+  if(!title){ toast('المهمة تحتاج عنوانًا.'); $('#fTitle').focus(); return; }
+  const freq = $('#fFreq').value;
+  const data = {
+    title, desc:$('#fDesc').value.trim(), path:modalPath, freq,
+    date: freq === 'open' ? '' : ($('#fDate').value || today()),
+    time: freq === 'open' ? '' : $('#fTime').value,
+    loc:  $('#fLoc').value.trim(), img: pendingImg
+  };
+  if(editingId){
+    Object.assign(tasks.find(t => t.id === editingId), data);
+    toast('حُدّثت المهمة.');
+  } else {
+    tasks.push({ id:uid(), doneDates:[], created:today(), ...data });
+    toast(freq === 'open'
+      ? `أُضيفت إلى المهام المفتوحة • ${PATHS[modalPath].name}`
+      : `أُضيفت إلى ${PATHS[modalPath].name} • ${fmtDate(data.date)}`);
+  }
+  $('#voiceInput').value = ''; finalTxt = '';
+  saveTasks(); closeModal(); renderAll();
+};
+$('#mCancel').onclick = closeModal;
+$('#mClose').onclick  = closeModal;
+$('#overlay').onclick = e => { if(e.target === $('#overlay')) closeModal(); };
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ closeModal(); $('#lightbox').classList.remove('open'); }
+});
+['#btnAdd','#btnAdd2','#btnAdd3'].forEach(s => $(s).onclick = () => openModal(null, null));
+
+/* ===========================================================
+   16) التنقل بين الصفحات
+   =========================================================== */
+function go(p){
+  page = p;
+  $$('.page').forEach(s => s.hidden = s.id !== 'p-' + p);
+  $$('[data-go]').forEach(b => {
+    if(b.dataset.go === p) b.setAttribute('aria-current','page');
+    else b.removeAttribute('aria-current');
+  });
+  Store.set('fp.page', p);
+  window.scrollTo(0, 0);
+  if(p === 'stats') buildCharts();
+  if(p === 'cal'){ renderCal(); renderCalList(); }
+}
+$$('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
+
+/* ===========================================================
+   17) التشغيل
+   =========================================================== */
+function renderAll(){
+  renderToday();
+  renderOpen();
+  renderCal();
+  renderCalList();
+  if(page === 'stats') buildCharts();
+}
+
+function seedIfEmpty(){
+  if(tasks.length) return;
+  const t = today();
+  tasks = [
+    { id:uid(), title:'مشي سريع 30 دقيقة', desc:'', path:'body', date:t, time:'07:00', freq:'daily', loc:'الحديقة', img:null, doneDates:[], created:t },
+    { id:uid(), title:'شرب 8 أكواب ماء', desc:'كوب مع كل وجبة وبين الوجبات', path:'body', date:t, time:'', freq:'daily', loc:'', img:null, doneDates:[], created:t },
+    { id:uid(), title:'تأمل وامتنان', desc:'ثلاثة أشياء أشكر عليها اليوم', path:'soul', date:t, time:'21:30', freq:'daily', loc:'', img:null, doneDates:[], created:t },
+    { id:uid(), title:'قراءة 20 صفحة', desc:'', path:'mind', date:t, time:'20:00', freq:'daily', loc:'', img:null, doneDates:[], created:t },
+    { id:uid(), title:'ترتيب مكتب العمل', desc:'إفراغ الدرج وأرشفة الأوراق', path:'out', date:t, time:'17:00', freq:'weekly', loc:'المكتب', img:null, doneDates:[], created:t },
+    { id:uid(), title:'تجديد رخصة القيادة', desc:'', path:'out', date:'', time:'', freq:'open', loc:'', img:null, doneDates:[], created:t },
+    { id:uid(), title:'إنهاء كتاب «فن اللامبالاة»', desc:'بقي فصلان', path:'mind', date:'', time:'', freq:'open', loc:'', img:null, doneDates:[], created:t },
+    { id:uid(), title:'الاتصال بوالدتي والاطمئنان عليها', desc:'', path:'out', date:'', time:'', freq:'open', loc:'', img:null, doneDates:[], created:t }
+  ];
+  saveTasks();
+}
+
+seedIfEmpty();
+renderJournal();
+renderAll();
+go(Store.get('fp.page', 'today'));
+if(!Store.persistent) toast('التخزين المحلي معطّل في هذه البيئة — بياناتك محفوظة لهذه الجلسة فقط.');
+</script>
+</body>
+</html>
