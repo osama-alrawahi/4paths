@@ -203,7 +203,8 @@ blockquote{margin:0;font-family:"Amiri",serif;font-size:clamp(1.2rem,2.4vw,1.75r
 /* ═══════════ 6. المهام: بطاقة مضغوطة + تمرير ═══════════ */
 .task-list{padding:.35rem .45rem .7rem;display:flex;flex-direction:column;gap:.28rem}
 .trow{position:relative;border-radius:var(--r-md);overflow:hidden;touch-action:pan-y;background:var(--surface-3)}
-.trow .acts{position:absolute;inset-block:0;display:flex;align-items:center;gap:.2rem;padding:0 .6rem}
+.trow .acts{position:absolute;inset-block:0;display:flex;align-items:center;gap:.2rem;padding:0 .6rem;opacity:0;pointer-events:none;transition:opacity .18s}
+.trow.swiping .acts,.trow.snapped .acts{opacity:1;pointer-events:auto}
 .trow .acts.start{inset-inline-start:0;background:linear-gradient(to left,transparent,color-mix(in srgb,var(--high) 22%,transparent))}
 .trow .acts.end{inset-inline-end:0;background:linear-gradient(to right,transparent,color-mix(in srgb,var(--urgent) 22%,transparent))}
 .trow .acts button{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--surface);box-shadow:var(--sh-1);color:var(--ink-2)}
@@ -214,7 +215,7 @@ blockquote{margin:0;font-family:"Amiri",serif;font-size:clamp(1.2rem,2.4vw,1.75r
   --c:var(--out);position:relative;z-index:1;background:var(--surface);
   display:flex;gap:.65rem;align-items:center;padding:var(--row-pad) .7rem;
   border:1px solid var(--line);border-radius:var(--r-md);
-  transition:transform .3s var(--ease),background .2s,border-color .2s;
+  transition:transform .42s cubic-bezier(.34,1.42,.64,1),background .2s,border-color .2s;
 }
 .task.dragging{transition:none}
 .trow:hover .task{border-color:var(--line-2)}
@@ -222,7 +223,7 @@ blockquote{margin:0;font-family:"Amiri",serif;font-size:clamp(1.2rem,2.4vw,1.75r
 .trow[data-pri="high"] .task{border-color:color-mix(in srgb,var(--high) 45%,var(--line))}
 .trow[data-pri="urgent"] .task{border-color:color-mix(in srgb,var(--urgent) 55%,var(--line));background:color-mix(in srgb,var(--urgent) 5%,var(--surface))}
 .trow[data-pri="urgent"] .task::before{background:var(--urgent);width:4px;box-shadow:0 0 10px color-mix(in srgb,var(--urgent) 60%,transparent)}
-.trow.done .task{opacity:.48}
+.trow.done .check,.trow.done .t-main{opacity:.5}
 .trow.done .t-title{text-decoration:line-through}
 .check{width:25px;height:25px;flex:none;border-radius:50%;border:1.8px solid var(--c);display:grid;place-items:center;color:transparent;transition:.2s var(--ease)}
 .check:active{transform:scale(.85)}
@@ -434,6 +435,92 @@ footer{border-top:1px solid var(--line);padding:1.5rem 0;color:var(--ink-3);font
   html{scroll-behavior:auto}
 }
 [data-motion="off"] *{animation:none !important;transition-duration:.05s !important}
+
+/* ═══════════ 12. الإضافات: سياق، سلاسل، تركيز، بحث ═══════════ */
+.ctx{display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;padding:0 0 .9rem}
+.ctx::-webkit-scrollbar{display:none}
+.ctx .c{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;padding:.4rem .8rem;border-radius:999px;
+  background:var(--surface);border:1px solid var(--line);font-size:.79rem;color:var(--ink-2);box-shadow:var(--sh-1)}
+.ctx .c b{color:var(--ink);font-weight:600}
+.ctx .c.gold{border-color:color-mix(in srgb,var(--gold) 45%,var(--line));color:var(--gold)}
+.ctx .c.act{cursor:pointer}
+.ctx .c.act:active{transform:scale(.96)}
+
+/* السلسلة */
+.t-streak{color:var(--high);font-weight:700}
+.streak-row{display:flex;gap:.5rem;flex-wrap:wrap;padding:.8rem 1rem 0}
+.streak-pill{display:flex;align-items:center;gap:.45rem;padding:.35rem .75rem;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);font-size:.78rem}
+.streak-pill b{font-family:"Reem Kufi",serif}
+
+/* خريطة الانتظام */
+.heat{display:flex;gap:3px;padding:1rem 1rem 0;overflow-x:auto;scrollbar-width:none;direction:ltr}
+.heat::-webkit-scrollbar{display:none}
+.heat .wk{display:flex;flex-direction:column;gap:3px}
+.heat i{width:13px;height:13px;border-radius:3.5px;background:var(--line);transition:transform .15s}
+.heat i:hover{transform:scale(1.35)}
+.heat i[data-l="0"]{background:color-mix(in srgb,var(--gold) 16%,var(--line))}
+.heat i[data-l="1"]{background:color-mix(in srgb,var(--gold) 40%,var(--line))}
+.heat i[data-l="2"]{background:color-mix(in srgb,var(--gold) 68%,var(--line))}
+.heat i[data-l="3"]{background:var(--gold)}
+.heat-legend{display:flex;align-items:center;gap:.35rem;padding:.7rem 1rem 1rem;font-size:.72rem;color:var(--ink-3)}
+.heat-legend i{width:11px;height:11px;border-radius:3px;display:block}
+
+/* المراجعة الأسبوعية */
+.insight{display:flex;gap:.6rem;align-items:flex-start;padding:.7rem .8rem;border-radius:var(--r-sm);background:var(--surface-2);font-size:.84rem;margin:.5rem 1rem 0}
+.insight span{font-size:1.1rem;line-height:1.3}
+.insight p{margin:0;color:var(--ink-2)}
+.insight b{color:var(--ink)}
+
+/* المهام الفرعية */
+.subs{display:flex;flex-direction:column;gap:.25rem;margin:.1rem 0 .55rem}
+.sub{display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--ink-2)}
+.sub button.sc{width:18px;height:18px;flex:none;border-radius:5px;border:1.6px solid var(--line-2);display:grid;place-items:center;color:transparent}
+.sub.on button.sc{background:var(--c);border-color:var(--c);color:#fff}
+.sub.on span{text-decoration:line-through;opacity:.6}
+.sub button.sc svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.sub .rm{margin-inline-start:auto;color:var(--ink-3);font-size:1rem;line-height:1;padding:0 .3rem}
+.subbar{height:4px;border-radius:99px;background:var(--line);overflow:hidden;margin:.15rem 0 .5rem}
+.subbar i{display:block;height:100%;background:var(--c);transition:width .5s var(--ease)}
+.sub-add{display:flex;gap:.4rem;margin-top:.4rem}
+.sub-add input{flex:1;padding:.5rem .65rem;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface-2)}
+
+/* مؤقّت التركيز */
+#focus{position:fixed;inset:0;z-index:320;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;
+  background:color-mix(in srgb,var(--bg-2) 96%,transparent);backdrop-filter:blur(12px);padding:1.5rem}
+#focus.on{display:flex}
+#focus .fring{--p:0;width:min(62vw,270px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;
+  background:conic-gradient(var(--c,#A8801F) calc(var(--p)*1%),var(--line) 0)}
+#focus .fring::before{content:"";position:absolute;inset:13px;border-radius:50%;background:var(--bg)}
+#focus .fnum{position:relative;font-family:"Reem Kufi",serif;font-size:clamp(2.4rem,9vw,3.6rem);font-weight:700;font-variant-numeric:tabular-nums}
+#focus h2{font-size:clamp(1.1rem,4vw,1.5rem);text-align:center;max-width:22ch}
+#focus .fsub{color:var(--ink-2);font-size:.85rem;margin:-.6rem 0 0}
+#focus .fctl{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+#focus .fpick{display:flex;gap:.35rem}
+#focus .fpick button{padding:.35rem .8rem;border-radius:999px;border:1px solid var(--line);font-size:.8rem;color:var(--ink-2)}
+#focus .fpick button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* البحث */
+#searchOv .modal{max-height:82vh}
+.srch{padding:.9rem 1rem;border-bottom:1px solid var(--line);display:flex;gap:.5rem;align-items:center}
+.srch input{flex:1;border:0;background:transparent;font-size:1.05rem;font-weight:500}
+.srch input:focus{outline:none}
+.sres{padding:.5rem;display:flex;flex-direction:column;gap:.2rem;overflow:auto;max-height:60vh}
+.sres button{display:flex;gap:.6rem;align-items:center;text-align:start;padding:.6rem .7rem;border-radius:var(--r-sm);transition:background .15s}
+.sres button:hover{background:var(--surface-2)}
+.sres .st{flex:1;min-width:0}
+.sres .st b{display:block;font-weight:600;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sres .st span{font-size:.74rem;color:var(--ink-3)}
+kbd{font-family:inherit;font-size:.7rem;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:.05rem .35rem;color:var(--ink-3)}
+
+/* تأثيرات */
+@keyframes shake{10%,90%{transform:translateX(-3px)}20%,80%{transform:translateX(5px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
+.shake{animation:shake .5s both}
+.path-card{--pct:0}
+.path-card::after{opacity:calc(var(--pct) / 260);animation:breathe 7s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.18)}}
+.pop{animation:pop .4s var(--ease)}
+@keyframes pop{40%{transform:scale(1.14)}}
+@media (max-width:560px){ .heat i{width:11px;height:11px} }
 </style>
 </head>
 <body>
@@ -1392,9 +1479,16 @@ function wireRows(root){
       if(!anim) card.classList.add('dragging');
       card.style.transform = '';
       opened = false;
+      row.classList.remove('snapped');
+      setTimeout(()=>row.classList.remove('swiping'), 260);
       requestAnimationFrame(()=>card.classList.remove('dragging'));
     };
-    const snap = v => { card.classList.remove('dragging'); card.style.transform = `translateX(${v}px)`; opened = v !== 0; };
+    const snap = v => {
+      card.classList.remove('dragging');
+      card.style.transform = `translateX(${v}px)`;
+      opened = v !== 0;
+      row.classList.add('snapped','swiping');
+    };
 
     card.addEventListener('pointerdown', e => {
       if(e.target.closest('button') && !e.target.closest('.check')) return;
@@ -1408,7 +1502,7 @@ function wireRows(root){
       if(!moved){
         if(Math.abs(ddx) < 9 && Math.abs(ddy) < 9) return;
         if(Math.abs(ddy) > Math.abs(ddx)){ drag = false; clearTimeout(lp); return; }
-        moved = true; clearTimeout(lp); card.classList.add('dragging');
+        moved = true; clearTimeout(lp); card.classList.add('dragging'); row.classList.add('swiping');
         try { card.setPointerCapture(e.pointerId); } catch(err){}
       }
       dx = Math.max(-190, Math.min(190, ddx));
@@ -1978,5 +2072,613 @@ go(Store.get('awtad.page','today'));
 tickTimer = setInterval(() => { if(!selecting && !$('#overlay').classList.contains('open')){ renderToday(); renderOpen(); } }, 60000);
 if(!Store.persistent) toast('التخزين المحلي معطّل هنا — بياناتك لهذه الجلسة فقط.');
 </script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   نموذج مبدئي للميزات الإضافية
+   ══════════════════════════════════════════════════════════ */
+let SX = Object.assign({ hijri:true, prayers:false, lat:null, lng:null, notify:false, focusLen:25 }, Store.get('awtad.x', {}));
+const saveSX = () => Store.set('awtad.x', SX);
+
+/* ═══ 1. التقويم الهجري وأوقات الصلاة ═══ */
+function hijriToday(){
+  try {
+    return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',
+      { day:'numeric', month:'long', year:'numeric' }).format(new Date());
+  } catch(e){ return ''; }
+}
+const D2R = Math.PI/180, R2D = 180/Math.PI;
+const dsin=d=>Math.sin(d*D2R), dcos=d=>Math.cos(d*D2R), dtan=d=>Math.tan(d*D2R);
+const dasin=x=>Math.asin(x)*R2D, dacos=x=>Math.acos(x)*R2D;
+const datan=x=>Math.atan(x)*R2D, datan2=(y,x)=>Math.atan2(y,x)*R2D;
+const wrap=(a,b)=>{ a = a - b*Math.floor(a/b); return a < 0 ? a + b : a; };
+function julianDay(d){
+  let y=d.getFullYear(), m=d.getMonth()+1; const day=d.getDate();
+  if(m <= 2){ y -= 1; m += 12; }
+  const A = Math.floor(y/100), B = 2 - A + Math.floor(A/4);
+  return Math.floor(365.25*(y+4716)) + Math.floor(30.6001*(m+1)) + day + B - 1524.5;
+}
+/* طريقة أم القرى: الفجر 18.5° والعشاء بعد المغرب بـ 90 دقيقة */
+function prayerTimes(date, lat, lng, tz){
+  const D = julianDay(date) - 2451545.0;
+  const g = wrap(357.529 + 0.98560028*D, 360);
+  const q = wrap(280.459 + 0.98564736*D, 360);
+  const L = wrap(q + 1.915*dsin(g) + 0.020*dsin(2*g), 360);
+  const e = 23.439 - 0.00000036*D;
+  const RA = wrap(datan2(dcos(e)*dsin(L), dcos(L))/15, 24);
+  const decl = dasin(dsin(e)*dsin(L));
+  const dhuhr = 12 + tz - lng/15 - (q/15 - RA);
+  const T = a => (1/15)*dacos((-dsin(a) - dsin(decl)*dsin(lat)) / (dcos(decl)*dcos(lat)));
+  const A = f => (1/15)*dacos((dsin(datan(1/(f + dtan(Math.abs(lat - decl))))) - dsin(decl)*dsin(lat)) / (dcos(decl)*dcos(lat)));
+  const maghrib = dhuhr + T(0.833);
+  return { الفجر:dhuhr - T(18.5), الشروق:dhuhr - T(0.833), الظهر:dhuhr, العصر:dhuhr + A(1), المغرب:maghrib, العشاء:maghrib + 1.5 };
+}
+const hhmm = h => { const m = Math.round(wrap(h,24)*60); return `${pad(Math.floor(m/60))}:${pad(m%60)}`; };
+function todayPrayers(){
+  if(!SX.prayers || SX.lat == null) return null;
+  const tz = -new Date().getTimezoneOffset()/60;
+  const t = prayerTimes(new Date(), SX.lat, SX.lng, tz);
+  return Object.entries(t).map(([k,v]) => ({ name:k, hm:hhmm(v) }));
+}
+function nextPrayer(){
+  const list = todayPrayers(); if(!list) return null;
+  const now = pad(new Date().getHours()) + ':' + pad(new Date().getMinutes());
+  return list.find(p => p.name !== 'الشروق' && p.hm > now) || { ...list[0], tomorrow:true };
+}
+function askLocation(){
+  if(!navigator.geolocation) return toast('جهازك لا يدعم تحديد الموقع.');
+  toast('جارٍ تحديد موقعك…');
+  navigator.geolocation.getCurrentPosition(
+    p => { SX.lat = +p.coords.latitude.toFixed(4); SX.lng = +p.coords.longitude.toFixed(4); SX.prayers = true; saveSX(); applyX(); renderCtx(); toast('حُدّد موقعك وحُسبت أوقات الصلاة.'); },
+    () => toast('تعذّر تحديد الموقع — اسمح للمتصفح بذلك أو أدخله يدويًا.'),
+    { timeout:9000 });
+}
+
+/* ═══ 2. السلاسل ═══ */
+function streakOf(t){
+  if(!['daily','weekly','monthly'].includes(t.freq)) return 0;
+  let n = 0, d = today(), guard = 0;
+  if(!t.doneDates.includes(d)) d = shift(d,-1);
+  while(guard++ < 500){
+    if(t.doneDates.includes(d)) n++;
+    else if(occursOn(t, d)) break;
+    else if(t.date && d < t.date) break;
+    d = shift(d,-1);
+  }
+  return n;
+}
+const bestStreak = () => tasks.reduce((m,t) => Math.max(m, streakOf(t)), 0);
+
+/* ═══ 3. شريط السياق ═══ */
+$('#p-today .page-head').insertAdjacentHTML('afterend', '<div class="ctx" id="ctx"></div>');
+function renderCtx(){
+  const c = [];
+  if(SX.hijri && hijriToday()) c.push(`<span class="c">🌙 <b>${hijriToday()}</b></span>`);
+  const np = nextPrayer();
+  if(np) c.push(`<span class="c gold">🕌 <b>${np.name}</b> ${np.hm}${np.tomorrow ? ' (غدًا)' : ''}</span>`);
+  const b = bestStreak();
+  if(b >= 2) c.push(`<span class="c">🔥 أطول سلسلة <b>${b}</b> يومًا</span>`);
+  const pend = openTasks().filter(t => !isDone(t) && t.due && new Date(t.due) < Date.now()).length;
+  if(pend) c.push(`<span class="c act" data-ctx="late" style="color:var(--urgent)">⏰ <b>${pend}</b> متأخرة</span>`);
+  if(deferredPrompt) c.push('<span class="c act gold" data-ctx="install">⤓ ثبّت التطبيق</span>');
+  if(('Notification' in window) && Notification.permission === 'default' && !SX.notify)
+    c.push('<span class="c act" data-ctx="notify">🔔 فعّل التذكيرات</span>');
+  $('#ctx').innerHTML = c.join('');
+  $$('#ctx [data-ctx]').forEach(el => el.onclick = () => {
+    const a = el.dataset.ctx;
+    if(a === 'install') doInstall();
+    if(a === 'notify') askNotify();
+    if(a === 'late'){ go('open'); showOpenDone = false; renderOpen(); }
+  });
+}
+
+/* ═══ 4. المراجعة الأسبوعية وخريطة الانتظام ═══ */
+$('#p-stats .stats').insertAdjacentHTML('afterend', `
+  <div class="stack" style="margin-top:var(--gap)">
+    <div class="panel rise">
+      <div class="panel-h"><h3>المراجعة الأسبوعية</h3><span class="count" id="wkCount"></span></div>
+      <div class="chart-box" style="padding-top:.8rem"><div class="chart-holder" style="height:210px"><canvas id="weekChart"></canvas></div></div>
+      <div id="wkInsights" style="padding-bottom:1rem"></div>
+    </div>
+    <div class="panel rise">
+      <div class="panel-h"><h3>خريطة الانتظام</h3><span class="count">آخر ١٨ أسبوعًا</span></div>
+      <div class="heat" id="heat"></div>
+      <div class="heat-legend">أقل
+        <i style="background:var(--line)"></i>
+        <i style="background:color-mix(in srgb,var(--gold) 16%,var(--line))"></i>
+        <i style="background:color-mix(in srgb,var(--gold) 40%,var(--line))"></i>
+        <i style="background:color-mix(in srgb,var(--gold) 68%,var(--line))"></i>
+        <i style="background:var(--gold)"></i> أكثر
+        <span id="heatNote" style="margin-inline-start:auto"></span>
+      </div>
+    </div>
+  </div>`);
+
+let weekChart;
+const dayPct = d => { const s = stats(d); return s.total ? s.done / s.total : -1; };
+function renderWeek(){
+  const days = [], labels = [], vals = [];
+  for(let i = 6; i >= 0; i--){
+    const d = shift(today(), -i); days.push(d);
+    labels.push(DOW_SHORT[parseD(d).getDay()]);
+    vals.push(Math.round(Math.max(dayPct(d),0) * 100));
+  }
+  if(weekChart) weekChart.destroy();
+  const cv = $('#weekChart'); if(!cv) return;
+  weekChart = new Chart(cv.getContext('2d'), {
+    type:'bar',
+    data:{ labels, datasets:[{ data:vals, borderRadius:8, borderSkipped:false,
+      backgroundColor: vals.map((v,i) => days[i] === today() ? css('--gold') : css('--line-2')), barPercentage:.62 }] },
+    options:{ responsive:true, maintainAspectRatio:false, animation:{ duration: S.motion ? 800 : 0 },
+      plugins:{ legend:{display:false}, tooltip:{ rtl:true, textDirection:'rtl', callbacks:{ label: c => ` ${c.raw}٪` } } },
+      scales:{ y:{ min:0, max:100, ticks:{ stepSize:50, color:css('--ink-3'), callback:v=>v+'٪' }, grid:{ color:css('--line') } },
+               x:{ ticks:{ color:css('--ink-2'), font:{ family:'IBM Plex Sans Arabic' } }, grid:{ display:false } } } }
+  });
+  const avg = Math.round(vals.reduce((a,b)=>a+b,0) / 7);
+  $('#wkCount').textContent = `متوسط ${avg}٪`;
+  /* أكثر مسار إهمالًا خلال الأسبوع */
+  const score = {};
+  PKEYS.forEach(p => score[p] = { t:0, d:0 });
+  days.forEach(d => { const s = stats(d); PKEYS.forEach(p => { score[p].t += s.per[p].total; score[p].d += s.per[p].done; }); });
+  const ranked = PKEYS.map(p => ({ p, pct: score[p].t ? score[p].d/score[p].t : -1, t:score[p].t }))
+                      .filter(x => x.t > 0).sort((a,b) => a.pct - b.pct);
+  const worst = ranked[0], best = ranked[ranked.length-1];
+  const bestDay = days[vals.indexOf(Math.max(...vals))];
+  const out = [];
+  if(worst && best && worst.p !== best.p)
+    out.push(`<div class="insight"><span>${PATHS[worst.p].emoji}</span><p>أقل مساراتك هذا الأسبوع <b>${PATHS[worst.p].name}</b> بنسبة ${Math.round(worst.pct*100)}٪، وأقواها <b>${PATHS[best.p].name}</b>. جرّب مهمة صغيرة واحدة في ${PATHS[worst.p].name} غدًا.</p></div>`);
+  if(Math.max(...vals) > 0)
+    out.push(`<div class="insight"><span>📈</span><p>أفضل أيامك كان <b>${fmtDate(bestDay)}</b> بنسبة ${Math.max(...vals)}٪، ومتوسط الأسبوع <b>${avg}٪</b>.</p></div>`);
+  const totalDone = tasks.reduce((a,t) => a + (t.doneDates||[]).filter(d => days.includes(d)).length, 0);
+  out.push(`<div class="insight"><span>✅</span><p>أنجزت <b>${totalDone}</b> مهمة خلال الأيام السبعة الماضية.</p></div>`);
+  $('#wkInsights').innerHTML = out.join('');
+}
+function renderHeat(){
+  const el = $('#heat'); if(!el) return;
+  const end = parseD(today()); end.setDate(end.getDate() + (6 - end.getDay()));
+  let html = '', done = 0;
+  for(let w = 17; w >= 0; w--){
+    html += '<div class="wk">';
+    for(let d = 0; d < 7; d++){
+      const day = new Date(end); day.setDate(end.getDate() - (w*7) - (6-d));
+      const ds = dstr(day), p = ds > today() ? -1 : dayPct(ds);
+      const lvl = p < 0 ? '' : p === 0 ? '0' : p < .5 ? '1' : p < 1 ? '2' : '3';
+      if(p === 1) done++;
+      html += `<i ${lvl !== '' ? `data-l="${lvl}"` : ''} title="${ds}${p>=0?` — ${Math.round(p*100)}٪`:''}"></i>`;
+    }
+    html += '</div>';
+  }
+  el.innerHTML = html;
+  $('#heatNote').textContent = done ? `${done} يومًا مكتملًا` : '';
+}
+
+/* ═══ 5. مؤقّت التركيز ═══ */
+document.body.insertAdjacentHTML('beforeend', `
+<div id="focus" role="dialog" aria-label="مؤقت التركيز">
+  <div class="fring" id="fRing"><span class="fnum" id="fNum">25:00</span></div>
+  <h2 id="fTitle2">—</h2>
+  <p class="fsub" id="fSub"></p>
+  <div class="fpick" id="fPick"></div>
+  <div class="fctl">
+    <button class="btn" id="fToggle">إيقاف مؤقت</button>
+    <button class="btn btn-solid" id="fDone">أنجزتها</button>
+    <button class="btn btn-ghost" id="fExit">إغلاق</button>
+  </div>
+</div>`);
+let fTaskId = null, fLeft = 0, fTotal = 0, fInt = null, fRun = false;
+$('#fPick').innerHTML = [15,25,45].map(m => `<button data-len="${m}" aria-pressed="${SX.focusLen===m}">${m} دقيقة</button>`).join('');
+$$('#fPick button').forEach(b => b.onclick = () => {
+  SX.focusLen = +b.dataset.len; saveSX();
+  $$('#fPick button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  if(fTaskId) startFocus(fTaskId);
+});
+function fPaint(){
+  $('#fNum').textContent = `${pad(Math.floor(fLeft/60))}:${pad(fLeft%60)}`;
+  $('#fRing').style.setProperty('--p', fTotal ? (1 - fLeft/fTotal) * 100 : 0);
+}
+function startFocus(id){
+  const t = byId(id); if(!t) return;
+  fTaskId = id; fTotal = SX.focusLen * 60; fLeft = fTotal; fRun = true;
+  $('#fRing').style.setProperty('--c', pathColor(t.path));
+  $('#fTitle2').textContent = t.title;
+  $('#fSub').textContent = `${PATHS[t.path].emoji} ${PATHS[t.path].name}${t.focusMin ? ` • ${t.focusMin} دقيقة سابقة` : ''}`;
+  $('#fToggle').textContent = 'إيقاف مؤقت';
+  $('#focus').classList.add('on'); fPaint();
+  clearInterval(fInt);
+  fInt = setInterval(() => {
+    if(!fRun) return;
+    fLeft--; fPaint();
+    if(fLeft <= 0){
+      clearInterval(fInt); fRun = false;
+      const t2 = byId(fTaskId);
+      if(t2){ t2.focusMin = (t2.focusMin || 0) + SX.focusLen; saveTasks(); }
+      cheer(pathColor(t2 ? t2.path : 'out'), true); buzz([40,60,40]);
+      $('#fNum').textContent = '✓'; $('#fSub').textContent = `انتهت الجلسة — ${SX.focusLen} دقيقة تركيز مسجّلة`;
+      try { if(SX.notify && Notification.permission === 'granted') new Notification('انتهت جلسة التركيز', { body: t2 ? t2.title : '' }); } catch(e){}
+      renderAll();
+    }
+  }, 1000);
+}
+$('#fToggle').onclick = e => { fRun = !fRun; e.currentTarget.textContent = fRun ? 'إيقاف مؤقت' : 'متابعة'; };
+$('#fExit').onclick = () => { clearInterval(fInt); fRun = false; $('#focus').classList.remove('on'); fTaskId = null; };
+$('#fDone').onclick = () => { if(fTaskId && !isDone(byId(fTaskId), today())) toggleTask(fTaskId); $('#fExit').click(); };
+
+/* ═══ 6. المهام الفرعية ═══ */
+let pendingSubs = [];
+$('#fImg').closest('.field').insertAdjacentHTML('beforebegin', `
+  <div class="field">
+    <label>خطوات فرعية</label>
+    <div id="subList" class="subs"></div>
+    <div class="sub-add">
+      <input id="subInput" placeholder="خطوة جديدة… مثل: تجهيز البيانات">
+      <button class="btn btn-sm" id="subAdd" type="button">إضافة</button>
+    </div>
+  </div>`);
+function renderSubsEditor(){
+  $('#subList').innerHTML = pendingSubs.map((s,i) => `<div class="sub ${s.done?'on':''}" style="--c:var(--gold)">
+      <button class="sc" type="button" data-i="${i}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <span>${esc(s.text)}</span><button class="rm" type="button" data-rm="${i}" aria-label="حذف">✕</button></div>`).join('')
+    || '<span style="font-size:.78rem;color:var(--ink-3)">لا خطوات بعد — قسّم المهمة الكبيرة إلى خطوات صغيرة.</span>';
+  $$('#subList .sc').forEach(b => b.onclick = () => { pendingSubs[b.dataset.i].done = !pendingSubs[b.dataset.i].done; renderSubsEditor(); });
+  $$('#subList .rm').forEach(b => b.onclick = () => { pendingSubs.splice(+b.dataset.rm,1); renderSubsEditor(); });
+}
+function addSub(){
+  const v = $('#subInput').value.trim(); if(!v) return;
+  pendingSubs.push({ id:uid(), text:v, done:false });
+  $('#subInput').value = ''; renderSubsEditor(); $('#subInput').focus();
+}
+$('#subAdd').onclick = addSub;
+$('#subInput').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); addSub(); } });
+
+/* ═══ 7. إعادة تعريف بطاقة المهمة ═══ */
+taskHTML = function(t, refDate){
+  const done = isDone(t, refDate), di = dueInfo(t);
+  const subs = t.subs || [], subDone = subs.filter(s => s.done).length;
+  const st = streakOf(t);
+  const line = [`<span style="color:var(--${t.path})">${PATHS[t.path].emoji}</span>`];
+  if(t.time) line.push(fmtTime(t.time));
+  if(t.freq !== 'once' && t.freq !== 'open') line.push('🔁 ' + FREQ_AR[t.freq]);
+  if(subs.length) line.push(`☑ ${subDone}/${subs.length}`);
+  if(st >= 2) line.push(`<span class="t-streak">🔥 ${st}</span>`);
+  if(t.loc && !t.time) line.push('📍 ' + esc(t.loc));
+  const flags =
+    (t.priority !== 'normal' ? `<span class="t-flag pri-${t.priority}">${PRI[t.priority].name}</span>` : '') +
+    (di ? `<span class="t-flag ${di.cls}">${di.txt}</span>` : '');
+  const meta = [
+    `<b>${PATHS[t.path].emoji} ${PATHS[t.path].name}</b>`,
+    t.freq === 'open' ? '♾️ بلا موعد' : '',
+    (t.date && t.freq === 'once') ? `📅 ${fmtDate(t.date)}` : '',
+    t.time ? `🕐 ${fmtTime(t.time)}` : '',
+    (t.freq !== 'once' && t.freq !== 'open') ? `🔁 ${FREQ_AR[t.freq]}` : '',
+    t.due ? `⏳ تنتهي ${fmtDate(t.due.slice(0,10))} ${fmtTime(t.due.slice(11,16))}` : '',
+    t.loc ? `📍 ${esc(t.loc)}` : '',
+    st >= 2 ? `🔥 ${st} ${st === 2 ? 'يومين' : 'أيام'} متتالية` : '',
+    t.focusMin ? `⏱ ${t.focusMin} دقيقة تركيز` : '',
+    `${PRI[t.priority].icon} ${PRI[t.priority].name}`
+  ].filter(Boolean).join('<span class="sep">|</span>');
+  const subsHTML = subs.length ? `<div class="subbar"><i style="width:${Math.round(subDone/subs.length*100)}%"></i></div>
+    <div class="subs">${subs.map(s => `<div class="sub ${s.done?'on':''}">
+      <button class="sc" data-sub="${t.id}:${s.id}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <span>${esc(s.text)}</span></div>`).join('')}</div>` : '';
+
+  return `<div class="trow ${done?'done':''} ${picked.has(t.id)?'picked':''} ${S.details?'open':''}" data-id="${t.id}" data-pri="${t.priority}" style="--c:var(--${t.path})">
+    <div class="acts start">
+      <button class="snz" data-act="snooze" aria-label="تأجيل يوم"><svg viewBox="0 0 24 24"><circle cx="12" cy="12.5" r="8"/><path d="M12 8.5v4l2.5 1.5M8 2.5L4.5 5M16 2.5L19.5 5"/></svg></button>
+      <button data-act="edit" aria-label="تعديل"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.5 2.5 0 0 0-3.5-3.5L4.5 16.5z"/></svg></button>
+    </div>
+    <div class="acts end">
+      <button data-act="ics" aria-label="إضافة إلى التقويم"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button>
+      <button class="del" data-act="del" aria-label="حذف"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6.5 7l1 13h9l1-13"/></svg></button>
+    </div>
+    <div class="task">
+      <button class="check" data-act="check" aria-label="${done?'إلغاء الإنجاز':'تعليم كمنجز'}"><svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <span class="t-main">
+        <span class="t-title">${esc(t.title)}</span>
+        <span class="t-line">${line.join('<span class="sep">·</span>')}${flags}</span>
+      </span>
+      <span class="t-chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+    </div>
+    <div class="t-detail">
+      ${t.img ? `<img class="t-thumb" src="${t.img}" alt="مرفق" data-act="img">` : ''}
+      ${t.desc ? `<p class="t-desc">${esc(t.desc)}</p>` : ''}
+      ${subsHTML}
+      <div class="t-meta">${meta}</div>
+      <div class="t-tools">
+        <button class="btn btn-sm" data-focus="${t.id}">▶ تركيز ${SX.focusLen} د</button>
+        <button class="btn btn-sm" data-act="edit">تعديل</button>
+        <button class="btn btn-sm" data-act="snooze">تأجيل يوم</button>
+        <button class="btn btn-sm" data-act="ics">⤓ ملف تقويم</button>
+        <button class="btn btn-sm" data-act="gcal">تقويم Google</button>
+        <button class="btn btn-sm btn-danger" data-act="del">حذف</button>
+      </div>
+    </div>
+  </div>`;
+};
+
+const _wireRows = wireRows;
+wireRows = function(root){
+  _wireRows(root);
+  $$('[data-sub]', root).forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const [tid, sid] = b.dataset.sub.split(':');
+    const t = byId(tid); if(!t) return;
+    const s = (t.subs || []).find(x => x.id === sid); if(!s) return;
+    s.done = !s.done; saveTasks();
+    if(s.done) buzz(12);
+    const all = t.subs.length && t.subs.every(x => x.done);
+    renderAll();
+    if(all && !isDone(t, today())) toast('اكتملت كل الخطوات — هل تُنهي المهمة؟', 'نعم', () => toggleTask(tid));
+  });
+  $$('[data-focus]', root).forEach(b => b.onclick = ev => { ev.stopPropagation(); startFocus(b.dataset.focus); });
+};
+
+/* ═══ 8. البحث السريع ═══ */
+document.body.insertAdjacentHTML('beforeend', `
+<div class="overlay" id="searchOv" role="dialog" aria-label="بحث">
+  <div class="modal">
+    <div class="grip"></div>
+    <div class="srch">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--ink-3)" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+      <input id="srchInput" placeholder="ابحث في المهام والتأملات…">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="sres" id="srchRes"></div>
+  </div>
+</div>`);
+$('#btnSettings').insertAdjacentHTML('beforebegin', `
+  <button class="icon-btn" id="btnSearch" title="بحث" aria-label="بحث">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+  </button>`);
+function openSearch(){
+  $('#searchOv').classList.add('open'); document.body.style.overflow = 'hidden';
+  $('#srchInput').value = ''; runSearch(''); setTimeout(() => $('#srchInput').focus(), 120);
+}
+function closeSearch(){ $('#searchOv').classList.remove('open'); document.body.style.overflow = ''; }
+function runSearch(q){
+  q = normalize(q || '');
+  const hitT = !q ? sortTasks(tasks.filter(t => !isDone(t, today()))).slice(0,8)
+    : tasks.filter(t => normalize(`${t.title} ${t.desc} ${t.loc} ${(t.subs||[]).map(s=>s.text).join(' ')}`).includes(q)).slice(0,12);
+  const hitJ = q ? journal.filter(e => normalize(e.text).includes(q)).slice(0,5) : [];
+  const rows = hitT.map(t => `<button data-open="${t.id}">
+      <span style="color:var(--${t.path})">${PATHS[t.path].emoji}</span>
+      <span class="st"><b>${esc(t.title)}</b><span>${t.freq==='open'?'مفتوحة':t.date?fmtDate(t.date):''}${t.due?' • تنتهي '+fmtDate(t.due.slice(0,10)):''}${t.priority!=='normal'?' • '+PRI[t.priority].name:''}</span></span>
+      ${isDone(t,today())?'<span style="color:var(--soul)">✓</span>':''}</button>`)
+    .concat(hitJ.map(e => `<button data-journal="${e.id}">
+      <span>📓</span><span class="st"><b>${esc(e.text.slice(0,60))}</b><span>تأمل • ${fmtDate(e.date)}</span></span></button>`));
+  $('#srchRes').innerHTML = rows.length ? rows.join('')
+    : `<div class="empty"><b>لا نتائج</b>جرّب كلمة أخرى.</div>`;
+  $$('#srchRes [data-open]').forEach(b => b.onclick = () => { closeSearch(); openModal(b.dataset.open, null); });
+  $$('#srchRes [data-journal]').forEach(b => b.onclick = () => { closeSearch(); go('journal'); });
+}
+$('#btnSearch').onclick = openSearch;
+$('#srchInput').addEventListener('input', e => runSearch(e.target.value));
+$('#searchOv').onclick = e => { if(e.target === $('#searchOv')) closeSearch(); };
+addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); openSearch(); }
+  if(e.key === 'Escape') closeSearch();
+});
+
+/* ═══ 9. التذكيرات المحلية ═══ */
+function askNotify(){
+  if(!('Notification' in window)) return toast('متصفحك لا يدعم التنبيهات.');
+  Notification.requestPermission().then(p => {
+    SX.notify = p === 'granted'; saveSX(); applyX(); renderCtx();
+    toast(SX.notify ? 'فُعّلت التذكيرات — تصلك ما دام التطبيق مفتوحًا.' : 'لم يُمنح إذن التنبيهات.');
+  });
+}
+function checkNotify(){
+  if(!SX.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
+  const key = 'awtad.notified.' + today(), sent = Store.get(key, []);
+  const now = Date.now();
+  tasks.forEach(t => {
+    if(isDone(t, today()) || sent.includes(t.id)) return;
+    let when = null;
+    if(t.due) when = new Date(t.due).getTime();
+    else if(t.time && occursOn(t, today())) when = new Date(today() + 'T' + t.time).getTime();
+    if(!when) return;
+    const diff = when - now;
+    if(diff <= 15*60000 && diff > -90000){
+      try {
+        new Notification('أوتاد • ' + PATHS[t.path].name, {
+          body: t.title + (t.due ? (diff > 0 ? ` — يتبقّى ${spanAr(diff)}` : ' — تجاوزت المهلة') : ' — يبدأ الآن'),
+          tag: t.id, lang:'ar', dir:'rtl'
+        });
+        sent.push(t.id); Store.set(key, sent);
+      } catch(e){}
+    }
+  });
+}
+setInterval(checkNotify, 30000);
+
+/* ═══ 10. التثبيت كتطبيق (PWA) ═══ */
+let deferredPrompt = null;
+function appIcon(size){
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const x = c.getContext('2d'), k = size/40;
+  x.fillStyle = '#0B0F18'; x.fillRect(0,0,size,size);
+  x.strokeStyle = '#D9B45C'; x.lineWidth = 1.7*k; x.lineJoin = 'round';
+  x.beginPath(); x.moveTo(20*k,4*k); x.lineTo(36*k,20*k); x.lineTo(20*k,36*k); x.lineTo(4*k,20*k); x.closePath(); x.stroke();
+  x.lineWidth = 1.2*k; x.globalAlpha = .65; x.strokeRect(8.5*k,8.5*k,23*k,23*k); x.globalAlpha = 1;
+  x.fillStyle = '#D9B45C'; x.beginPath(); x.arc(20*k,20*k,3.6*k,0,7); x.fill();
+  return c.toDataURL('image/png');
+}
+try {
+  const man = { name:'أوتاد — مسارات النمو', short_name:'أوتاد', lang:'ar', dir:'rtl',
+    start_url: location.href, scope:'./', display:'standalone', orientation:'any',
+    background_color:'#0B0F18', theme_color:'#EAEDF3',
+    description:'أربعة تُقيم حياتك: الجسد والروح والعقل والعالم الخارجي.',
+    icons:[{ src: appIcon(192), sizes:'192x192', type:'image/png', purpose:'any' },
+           { src: appIcon(512), sizes:'512x512', type:'image/png', purpose:'maskable any' }] };
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = URL.createObjectURL(new Blob([JSON.stringify(man)], { type:'application/manifest+json' }));
+  document.head.appendChild(link);
+  const ic = document.createElement('link'); ic.rel = 'apple-touch-icon'; ic.href = appIcon(180);
+  document.head.appendChild(ic);
+} catch(e){}
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; renderCtx(); applyX(); });
+function doInstall(){
+  if(!deferredPrompt) return toast('للتثبيت: افتح قائمة المتصفح ثم «إضافة إلى الشاشة الرئيسية».');
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => { deferredPrompt = null; renderCtx(); });
+}
+
+/* ═══ 11. صورة الإنجاز للمشاركة ═══ */
+async function shareCard(){
+  const s = stats(today()), dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const W = 1080, H = 1350, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0,0,W,H);
+  g.addColorStop(0, dark ? '#0B0F18' : '#F3F5F9'); g.addColorStop(1, dark ? '#141A28' : '#E2E7F0');
+  x.fillStyle = g; x.fillRect(0,0,W,H);
+  x.direction = 'rtl'; x.textAlign = 'right';
+  const ink = dark ? '#ECF0F8' : '#141926', ink2 = dark ? '#98A2BB' : '#5A6379', gold = dark ? '#D9B45C' : '#A8801F';
+  x.fillStyle = gold; x.font = '600 34px "IBM Plex Sans Arabic", sans-serif';
+  x.fillText('أوتاد — أربعة تُقيم حياتك', W-90, 130);
+  x.fillStyle = ink2; x.font = '400 30px "IBM Plex Sans Arabic", sans-serif';
+  x.fillText(fmtLong(today()), W-90, 185);
+  /* الحلقة */
+  const cx = W/2, cy = 560, r = 190;
+  x.lineWidth = 42; x.strokeStyle = dark ? '#263044' : '#DDE2EC';
+  x.beginPath(); x.arc(cx, cy, r, 0, Math.PI*2); x.stroke();
+  x.strokeStyle = gold; x.lineCap = 'round';
+  x.beginPath(); x.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + Math.PI*2*(s.pct/100)); x.stroke();
+  x.fillStyle = ink; x.textAlign = 'center'; x.font = '700 130px "Reem Kufi", sans-serif';
+  x.fillText(s.pct + '٪', cx, cy + 45);
+  x.fillStyle = ink2; x.font = '400 32px "IBM Plex Sans Arabic", sans-serif';
+  x.fillText(`${s.done} من ${s.total} مهمة`, cx, cy + 110);
+  /* أشرطة المسارات */
+  x.textAlign = 'right';
+  const colors = { body:'#BE3A56', soul:'#0E8C7D', mind:'#B47C10', out:'#3A57BE' };
+  PKEYS.forEach((p,i) => {
+    const y = 900 + i*95, d = s.per[p], pct = d.total ? d.done/d.total : 0;
+    x.fillStyle = ink; x.font = '600 34px "IBM Plex Sans Arabic", sans-serif';
+    x.fillText(PATHS[p].name, W-90, y);
+    x.fillStyle = dark ? '#263044' : '#DDE2EC';
+    x.beginPath(); x.roundRect(90, y-30, W-480, 20, 10); x.fill();
+    x.fillStyle = colors[p];
+    x.beginPath(); x.roundRect(90 + (W-480)*(1-pct), y-30, (W-480)*pct, 20, 10); x.fill();
+  });
+  x.fillStyle = ink2; x.textAlign = 'center'; x.font = '400 26px "IBM Plex Sans Arabic", sans-serif';
+  x.fillText('صُنعت بتطبيق أوتاد', cx, H-70);
+  c.toBlob(async b => {
+    const file = new File([b], 'awtad-today.png', { type:'image/png' });
+    if(navigator.canShare && navigator.canShare({ files:[file] })){
+      try { await navigator.share({ files:[file], title:'إنجاز اليوم' }); return; } catch(e){}
+    }
+    const u = URL.createObjectURL(b), a = document.createElement('a');
+    a.href = u; a.download = 'awtad-today.png'; a.click();
+    setTimeout(() => URL.revokeObjectURL(u), 400);
+    toast('نُزّلت صورة إنجاز اليوم.');
+  }, 'image/png');
+}
+
+/* ═══ 12. إعدادات الميزات الجديدة ═══ */
+const setHeads = $$('#setOverlay .set-h');
+const dataHead = setHeads.find(h => h.textContent.includes('التقويم والبيانات')) || setHeads[setHeads.length-1];
+dataHead.insertAdjacentHTML('beforebegin', `
+  <p class="set-h">التذكيرات والسياق</p>
+  <div class="set-row">
+    <div class="txt"><b>تذكيرات المهام</b><span>تنبيه قبل موعد المهمة أو انتهاء مهلتها بـ ١٥ دقيقة</span></div>
+    <button class="switch" id="swNotify" role="switch" aria-checked="false"></button>
+  </div>
+  <div class="set-row">
+    <div class="txt"><b>التاريخ الهجري</b><span>يظهر في شريط السياق أعلى صفحة اليوم</span></div>
+    <button class="switch" id="swHijri" role="switch" aria-checked="true"></button>
+  </div>
+  <div class="set-row">
+    <div class="txt"><b>أوقات الصلاة</b><span id="prayLbl">حسب أم القرى — يحتاج موقعك</span></div>
+    <button class="switch" id="swPray" role="switch" aria-checked="false"></button>
+  </div>
+  <div class="set-row" id="prayRow" hidden>
+    <div class="txt"><b>مواقيت اليوم</b><span id="prayList">—</span></div>
+    <button class="btn btn-sm" id="prayLoc">موقعي</button>
+  </div>
+  <div class="set-row">
+    <div class="txt"><b>تثبيت التطبيق</b><span>يعمل كتطبيق مستقل على شاشتك الرئيسية</span></div>
+    <button class="btn btn-sm" id="btnInstall">تثبيت</button>
+  </div>
+  <div class="set-row">
+    <div class="txt"><b>صورة إنجاز اليوم</b><span>بطاقة جاهزة للمشاركة</span></div>
+    <button class="btn btn-sm" id="btnShare">إنشاء</button>
+  </div>`);
+function applyX(){
+  sw($('#swNotify'), SX.notify); sw($('#swHijri'), SX.hijri); sw($('#swPray'), SX.prayers);
+  $('#prayRow').hidden = !SX.prayers;
+  const pl = todayPrayers();
+  $('#prayList').textContent = pl ? pl.map(p => `${p.name} ${p.hm}`).join(' · ') : 'حدّد موقعك لعرض المواقيت';
+  $('#prayLbl').textContent = SX.lat != null ? `أم القرى — ${SX.lat}، ${SX.lng}` : 'حسب أم القرى — يحتاج موقعك';
+}
+$('#swNotify').onclick = () => { if(SX.notify){ SX.notify = false; saveSX(); applyX(); renderCtx(); } else askNotify(); };
+$('#swHijri').onclick  = () => { SX.hijri = !SX.hijri; saveSX(); applyX(); renderCtx(); };
+$('#swPray').onclick   = () => {
+  SX.prayers = !SX.prayers; saveSX(); applyX(); renderCtx();
+  if(SX.prayers && SX.lat == null) askLocation();
+};
+$('#prayLoc').onclick = askLocation;
+$('#btnInstall').onclick = doInstall;
+$('#btnShare').onclick = shareCard;
+
+/* ═══ 13. تأثيرات ═══ */
+function animateNum(el, from, to){
+  if(!S.motion || from === to){ el.innerHTML = to + '<small>٪</small>'; return; }
+  const t0 = performance.now(), dur = 700;
+  const step = now => {
+    const k = Math.min(1, (now - t0)/dur), e = 1 - Math.pow(1-k, 3);
+    el.innerHTML = Math.round(from + (to - from)*e) + '<small>٪</small>';
+    if(k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+let ringVal = 0;
+const _renderToday = renderToday;
+renderToday = function(){
+  _renderToday();
+  const s = stats(today());
+  animateNum($('#ringNum'), ringVal, s.pct); ringVal = s.pct;
+  $$('#pathCards .path-card').forEach(card => {
+    const p = card.dataset.p, d = s.per[p];
+    card.style.setProperty('--pct', d.total ? Math.round(d.done/d.total*100) : 0);
+  });
+};
+const _renderAll = renderAll;
+renderAll = function(){
+  _renderAll();
+  renderCtx();
+  if(page === 'stats'){ renderWeek(); renderHeat(); }
+};
+const _go = go;
+go = function(p){ _go(p); if(p === 'stats'){ renderWeek(); renderHeat(); } };
+const _buildCharts = buildCharts;
+buildCharts = function(){ _buildCharts(); if($('#weekChart')) renderWeek(); };
+
+/* اهتزاز الحقل عند الحفظ بلا عنوان + حفظ الخطوات الفرعية */
+const _save = $('#mSave').onclick;
+$('#mSave').onclick = () => {
+  if(!$('#fTitle').value.trim()){
+    const f = $('#fTitle'); f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake');
+  }
+  const wasEditing = editingId;
+  _save();
+  if(!$('#overlay').classList.contains('open')){
+    const t = wasEditing ? byId(wasEditing) : tasks[tasks.length-1];
+    if(t){ t.subs = pendingSubs.map(s => ({ ...s })); saveTasks(); renderAll(); }
+  }
+};
+const _openModal = openModal;
+openModal = function(id, p){
+  _openModal(id, p);
+  pendingSubs = id && byId(id) ? (byId(id).subs || []).map(s => ({ ...s })) : [];
+  $('#subInput').value = '';
+  renderSubsEditor();
+};
+
+/* ═══ 14. تشغيل الإضافات ═══ */
+applyX();
+renderCtx();
+renderAll();
+setInterval(renderCtx, 60000);
+</script>
+
 </body>
 </html>
